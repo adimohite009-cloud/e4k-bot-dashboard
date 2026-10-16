@@ -1,0 +1,26 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Bot runtime files (don't commit these)
+stats.json
+screen.png
+manual_attack.trigger
+full_screen.png
+logs/
+*.log
+
+# Assets (screenshot your own game images)
+assets/
+
+# Environment
+.env
+venv/
+env/
+
+# Windows
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E4K Bot — Control Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0A0E16;--panel:#111726;--panel2:#161D2E;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+      --text:#EAEEF6;--dim:#98A2B6;--faint:#697089;
+      --gold:#E9A93C;--gold-soft:#F6D488;--gold-deep:#B5822B;--goldtint:rgba(233,169,60,.14);
+      --emerald:#3FBE7B;--blue:#5B9CF0;--red:#F05B5B;
+      --r:18px;--r2:12px;
+      --brand:'Cinzel',Georgia,serif;--body:'Outfit',system-ui,sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{background:var(--bg);scroll-behavior:smooth}
+    body{min-height:100vh;background:var(--bg);color:var(--text);font:400 15px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{color:inherit;text-decoration:none} ul{list-style:none} img{display:block;max-width:100%}
+
+    /* BG */
+    .fx{position:fixed;inset:0;z-index:-1;pointer-events:none;
+      background:radial-gradient(900px 520px at 78% -6%,rgba(233,169,60,.14),transparent 62%),
+        radial-gradient(800px 600px at -8% 8%,rgba(91,156,240,.08),transparent 60%),
+        radial-gradient(1200px 700px at 50% 110%,rgba(13,21,44,.95),transparent 70%),var(--bg)}
+
+    /* TOPBAR */
+    .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .topbar-in{max-width:1280px;margin:auto;padding:0 24px;display:flex;align-items:center;gap:16px;height:64px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand-name{font:900 20px/1 var(--brand);letter-spacing:.14em;background:linear-gradient(100deg,#b98526,#fff3d6 30%,var(--gold-soft) 52%,var(--gold) 70%,#b98526);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .brand-sub{font:600 10px/1 var(--body);letter-spacing:.26em;text-transform:uppercase;color:var(--dim);margin-top:4px;display:block}
+    .nav-links{display:flex;gap:4px;margin-left:28px}
+    .nav-links a{padding:6px 14px;border-radius:10px;font:500 14px/1 var(--body);color:var(--dim);transition:color .15s,background .15s;cursor:pointer}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,.06)}
+    .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .status-pill{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;border:1px solid rgba(63,190,123,.35);background:rgba(63,190,123,.08);font:600 13px/1 var(--body);color:#9BEFC1;transition:all .3s}
+    .status-pill.stopped{border-color:rgba(240,91,91,.35);background:rgba(240,91,91,.08);color:#F9A8A8}
+    .pulse{width:7px;height:7px;border-radius:50%;background:var(--emerald);animation:pulse 2.4s ease-out infinite;flex-shrink:0}
+    .pulse.red{background:var(--red);animation:none}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,190,123,.55)}70%{box-shadow:0 0 0 8px rgba(63,190,123,0)}100%{box-shadow:0 0 0 0 rgba(63,190,123,0)}}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:var(--r2);border:1px solid transparent;font:600 14px/1 var(--body);cursor:pointer;transition:all .15s}
+    .btn-gold{color:#1E1405;background:linear-gradient(180deg,var(--gold-soft),var(--gold) 55%,var(--gold-deep));box-shadow:0 10px 28px -12px rgba(233,169,60,.7),inset 0 1px 0 rgba(255,255,255,.4)}
+    .btn-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
+    .btn-ghost{color:var(--text);background:rgba(255,255,255,.04);border-color:var(--border2)}
+    .btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(233,169,60,.35)}
+    .btn-red{color:#fff;background:rgba(240,91,91,.15);border-color:rgba(240,91,91,.4)}
+    .btn-red:hover{background:rgba(240,91,91,.28)}
+    .btn-green{color:#fff;background:rgba(63,190,123,.15);border-color:rgba(63,190,123,.4)}
+    .btn-green:hover{background:rgba(63,190,123,.28)}
+
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px);max-width:1280px;margin:auto;padding:0 24px;gap:28px}
+    @media(max-width:900px){.layout{grid-template-columns:1fr;padding:0 16px}.sidebar{display:none}}
+
+    /* SIDEBAR */
+    .sidebar{padding:28px 0}
+    .sidebar-section{margin-bottom:28px}
+    .sidebar-label{font:700 10px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;padding:0 12px}
+    .sidebar-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:2px;font:500 14px/1 var(--body);color:var(--dim);cursor:pointer;transition:all .15s}
+    .sidebar-item:hover{color:var(--text);background:rgba(255,255,255,.05)}
+    .sidebar-item.active{color:var(--gold-soft);background:var(--goldtint);border:1px solid rgba(233,169,60,.2)}
+    .sidebar-badge{margin-left:auto;padding:2px 8px;border-radius:999px;font:700 11px/1.5 var(--body);background:rgba(233,169,60,.2);color:var(--gold-soft)}
+    .sidebar-badge.green{background:rgba(63,190,123,.2);color:#9BEFC1}
+    .sidebar-badge.red{background:rgba(240,91,91,.2);color:#F9A8A8}
+
+    /* MAIN */
+    .main{padding:28px 0 48px}
+    .page{display:none}.page.active{display:block}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+    .stat-card{padding:20px;background:linear-gradient(180deg,rgba(17,23,38,.9),rgba(22,29,46,.7));border:1px solid var(--border);border-radius:var(--r);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .2s,transform .2s}
+    .stat-card:hover{border-color:rgba(233,169,60,.25);transform:translateY(-2px)}
+    .stat-label{font:600 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+    .stat-value{font:800 32px/1 var(--body);color:var(--text)}
+    .stat-value.gold{background:linear-gradient(100deg,var(--gold),var(--gold-soft));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .stat-value.green{color:var(--emerald)}
+    .stat-value.red{color:var(--red)}
+    .stat-sub{margin-top:6px;font-size:12px;color:var(--dim)}
+
+    .kicker{font:700 11px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:block}
+
+    /* PANEL */
+    .panel{background:linear-gradient(180deg,rgba(17,23,38,.9),rgba(22,29,46,.7));border:1px solid var(--border);border-radius:var(--r);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);margin-bottom:20px}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
+    .panel-head h3{font:700 15px/1 var(--body)}
+    .panel-body{padding:20px}
+
+    /* TOGGLE */
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-info h4{font:600 14px/1 var(--body);color:var(--text);margin-bottom:4px}
+    .toggle-info p{font-size:12.5px;color:var(--dim)}
+    .toggle{position:relative;width:44px;height:24px;cursor:pointer;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.1);border:1px solid var(--border2);border-radius:999px;transition:background .2s,border-color .2s;flex-shrink:0}
+    .toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--dim);transition:transform .2s,background .2s}
+    .toggle:checked{background:rgba(63,190,123,.3);border-color:rgba(63,190,123,.5)}
+    .toggle:checked::after{transform:translateX(20px);background:var(--emerald)}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .form-field label{display:block;font:600 12px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+    .form-field input,.form-field select{width:100%;padding:10px 14px;border-radius:var(--r2);background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);font:500 14px/1 var(--body);transition:border-color .15s,background .15s;outline:none}
+    .form-field input:focus,.form-field select:focus{border-color:rgba(233,169,60,.45);background:rgba(255,255,255,.07)}
+    .form-field select option{background:#161D2E}
+    .form-actions{display:flex;gap:10px;margin-top:20px}
+
+    /* LOG TABLE */
+    .log-table{width:100%;border-collapse:collapse;font-size:13.5px}
+    .log-table th{padding:10px 14px;text-align:left;font:700 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--border)}
+    .log-table td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--dim);vertical-align:middle}
+    .log-table tr:last-child td{border-bottom:none}
+    .log-table tr:hover td{background:rgba(255,255,255,.025)}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font:700 11px/1.5 var(--body)}
+    .badge-green{background:rgba(63,190,123,.15);color:#9BEFC1;border:1px solid rgba(63,190,123,.3)}
+    .badge-red{background:rgba(240,91,91,.15);color:#F9A8A8;border:1px solid rgba(240,91,91,.3)}
+    .badge-gold{background:rgba(233,169,60,.15);color:var(--gold-soft);border:1px solid rgba(233,169,60,.3)}
+    .badge-blue{background:rgba(91,156,240,.15);color:#A5C8FF;border:1px solid rgba(91,156,240,.3)}
+
+    /* LIVE LOG */
+    .live-log{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;font:500 12.5px/1.8 'Courier New',monospace;color:var(--dim);height:300px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent}
+    .log-success{color:var(--emerald)}.log-warn{color:var(--gold)}.log-error{color:var(--red)}.log-info{color:var(--blue)}
+
+    /* BIG BTNS */
+    .big-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+    .big-btn{padding:20px;border-radius:var(--r);cursor:pointer;border:1px solid;display:flex;flex-direction:column;align-items:flex-start;gap:8px;transition:transform .2s,box-shadow .2s;text-align:left;font-family:var(--body);background:none}
+    .big-btn:hover{transform:translateY(-3px)}
+    .big-btn-icon{font-size:28px}
+    .big-btn-label{font:700 15px/1 var(--body)}
+    .big-btn-desc{font:400 12px/1.4 var(--body);opacity:.7}
+    .big-btn-start{border-color:rgba(63,190,123,.4);color:#9BEFC1}.big-btn-start:hover{background:rgba(63,190,123,.08);box-shadow:0 18px 40px -20px rgba(63,190,123,.5)}
+    .big-btn-stop{border-color:rgba(240,91,91,.4);color:#F9A8A8}.big-btn-stop:hover{background:rgba(240,91,91,.08);box-shadow:0 18px 40px -20px rgba(240,91,91,.4)}
+    .big-btn-gold{border-color:rgba(233,169,60,.4);color:var(--gold-soft)}.big-btn-gold:hover{background:rgba(233,169,60,.07);box-shadow:0 18px 40px -20px rgba(233,169,60,.4)}
+    .big-btn-blue{border-color:rgba(91,156,240,.4);color:#A5C8FF}.big-btn-blue:hover{background:rgba(91,156,240,.07);box-shadow:0 18px 40px -20px rgba(91,156,240,.4)}
+
+    /* PROGRESS */
+    .progress-bar{height:6px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden;margin-top:10px}
+    .progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-soft));transition:width .6s ease}
+    .progress-fill.green{background:linear-gradient(90deg,var(--emerald),#8BFFC5)}
+    .progress-fill.blue{background:linear-gradient(90deg,var(--blue),#A5C8FF)}
+
+    /* TIMER */
+    .timer-ring{position:relative;width:120px;height:120px;margin:0 auto 16px}
+    .timer-ring svg{transform:rotate(-90deg)}
+    .timer-ring circle{fill:none;stroke-width:8}
+    .timer-ring .bg-ring{stroke:rgba(255,255,255,.07)}
+    .timer-ring .fg-ring{stroke:var(--gold);stroke-linecap:round;stroke-dasharray:314;transition:stroke-dashoffset 1s linear}
+    .timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .timer-num{font:800 26px/1 var(--body);color:var(--text)}
+    .timer-unit{font:600 11px/1 var(--body);color:var(--dim);margin-top:3px;letter-spacing:.1em;text-transform:uppercase}
+
+    /* CONNECTION BANNER */
+    .conn-banner{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:var(--r2);margin-bottom:20px;font:600 13px/1.4 var(--body)}
+    .conn-banner.ok{background:rgba(63,190,123,.08);border:1px solid rgba(63,190,123,.25);color:#9BEFC1}
+    .conn-banner.err{background:rgba(240,91,91,.08);border:1px solid rgba(240,91,91,.25);color:#F9A8A8}
+    .conn-banner.warn{background:rgba(233,169,60,.08);border:1px solid rgba(233,169,60,.25);color:var(--gold-soft)}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:28px;right:28px;z-index:999;display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:var(--r2);background:linear-gradient(180deg,#1C2640,#131B2D);border:1px solid rgba(63,190,123,.4);box-shadow:0 20px 50px -16px rgba(0,0,0,.9);font:600 14px/1 var(--body);color:var(--text);transform:translateY(20px);opacity:0;transition:transform .3s ease,opacity .3s ease}
+    #toast.show{transform:translateY(0);opacity:1}
+
+    /* LAST UPDATE */
+    #last-update{font-size:11px;color:var(--faint);margin-left:auto}
+
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+  </style>
+</head>
+<body>
+<div class="fx" aria-hidden="true"></div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span style="font-size:22px">👑</span>
+      <div>
+        <span class="brand-name">E4K BOT</span>
+        <span class="brand-sub">Control Panel</span>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a class="active" onclick="showPage('dashboard',this)">Dashboard</a>
+      <a onclick="showPage('attack',this)">Attack</a>
+      <a onclick="showPage('settings',this)">Settings</a>
+      <a onclick="showPage('logs',this)">Logs</a>
+    </nav>
+    <div class="topbar-right">
+      <span id="last-update">Connecting…</span>
+      <div class="status-pill" id="status-pill">
+        <span class="pulse" id="pulse-dot"></span>
+        <span id="status-text">Connecting…</span>
+      </div>
+      <button class="btn btn-gold" id="toggle-btn" onclick="toggleBot()">▶ Start Bot</button>
+    </div>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <div class="sidebar-item active" onclick="showPage('dashboard',this)"><span>🏰</span> Dashboard</div>
+      <div class="sidebar-item" onclick="showPage('attack',this)"><span>⚔️</span> Attack Bot <span class="sidebar-badge green" id="sb-attack-badge">—</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Bot Modules</div>
+      <div class="sidebar-item" onclick="showPage('settings',this)"><span>⚙️</span> Settings</div>
+      <div class="sidebar-item" onclick="showPage('logs',this)"><span>📜</span> Live Logs</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Session Info</div>
+      <div id="sidebar-session" style="padding:12px;border-radius:var(--r2);background:rgba(233,169,60,.06);border:1px solid rgba(233,169,60,.15);font-size:12px;color:var(--dim)">
+        <div style="font:600 12px/1 var(--body);color:var(--gold-soft);margin-bottom:8px">⚡ Session</div>
+        <div>Attacks: <span id="sb-attacks" style="color:var(--text)">—</span></div>
+        <div style="margin-top:4px">Uptime: <span id="sb-uptime" style="color:var(--text)">—</span></div>
+        <div style="margin-top:4px">Win Rate: <span id="sb-winrate" style="color:var(--emerald)">—</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- CONNECTION BANNER -->
+    <div id="conn-banner" class="conn-banner warn">
+      ⏳ Connecting to bot server at <strong>localhost:5000</strong> — make sure <code>python server.py</code> is running.
+    </div>
+
+    <!-- ===== DASHBOARD PAGE ===== -->
+    <div class="page active" id="page-dashboard">
+      <span class="kicker">Overview</span>
+      <h1 style="font:800 26px/1 var(--body);margin-bottom:24px">Empire Bot Dashboard</h1>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">⚔️ Attacks Sent</div>
+          <div class="stat-value gold" id="s-attacks">—</div>
+          <div class="stat-sub" id="s-attacks-sub">This session</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">🏆 Wins</div>
+          <div class="stat-value green" id="s-wins">—</div>
+          <div class="stat-sub" id="s-winrate">Win rate: —</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">⏱️ Uptime</div>
+          <div class="stat-value" id="s-uptime">—</div>
+          <div class="stat-sub">HH:MM:SS</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">❌ Failed Attacks</div>
+          <div class="stat-value red" id="s-failed">—</div>
+          <div class="stat-sub" id="s-last-target">Last target: —</div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="big-btn-grid">
+        <button class="big-btn big-btn-start" onclick="triggerAttack()">
+          <span class="big-btn-icon">⚔️</span>
+          <span class="big-btn-label">Attack Now</span>
+          <span class="big-btn-desc">Trigger an immediate attack round</span>
+        </button>
+        <button class="big-btn big-btn-gold" onclick="showPage('attack',null)">
+          <span class="big-btn-icon">⚙️</span>
+          <span class="big-btn-label">Attack Settings</span>
+          <span class="big-btn-desc">Configure intervals, levels, troops</span>
+        </button>
+        <button class="big-btn big-btn-blue" onclick="showPage('logs',null)">
+          <span class="big-btn-icon">📜</span>
+          <span class="big-btn-label">View Live Logs</span>
+          <span class="big-btn-desc">Real-time bot activity stream</span>
+        </button>
+        <button class="big-btn big-btn-stop" onclick="toggleBot()">
+          <span class="big-btn-icon" id="dash-stop-icon">▶️</span>
+          <span class="big-btn-label" id="dash-stop-label">Start Bot</span>
+          <span class="big-btn-desc">Toggle the bot on or off</span>
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>📊 Session Progress</h3>
+          <span id="progress-label" style="font-size:13px;color:var(--dim)">— / — attacks</span>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;gap:14px">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-bottom:6px">
+                <span>Attacks completed</span><span id="p-attacks" style="color:var(--gold-soft);font-weight:700">—</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" id="p-attacks-bar" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-bottom:6px">
+                <span>Win rate</span><span id="p-winrate" style="color:var(--emerald);font-weight:700">—</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill green" id="p-winrate-bar" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div style="margin-top:16px;font-size:12px;color:var(--faint)">
+            Last attack: <span id="p-last-attack" style="color:var(--dim)">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent log preview -->
+      <div class="panel">
+        <div class="panel-head"><h3>📋 Recent Log</h3><button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="showPage('logs',null)">View all →</button></div>
+        <div class="panel-body" style="padding:12px">
+          <div class="live-log" id="dash-log" style="height:180px">
+            <div style="color:var(--faint);font-style:italic">Waiting for bot output…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ATTACK PAGE ===== -->
+    <div class="page" id="page-attack">
+      <span class="kicker">Attack Module</span>
+      <h1 style="font:800 26px/1 var(--body);margin-bottom:24px">⚔️ Robber Baron Attack Bot</h1>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" class="attack-grid">
+        <div class="panel">
+          <div class="panel-head"><h3>⚙️ Features</h3></div>
+          <div class="panel-body">
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>Auto-Attack Robber Barons</h4><p>Find & attack RB castles on world map</p></div>
+              <input type="checkbox" class="toggle" checked onchange="saveToggle('auto_attack',this.checked)">
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>Max Troops Per Attack</h4><p>Always send maximum available troops</p></div>
+              <input type="checkbox" class="toggle" checked onchange="saveToggle('max_troops',this.checked)">
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>Auto Scroll Map</h4><p>Scroll to find more targets when none visible</p></div>
+              <input type="checkbox" class="toggle" checked onchange="saveToggle('auto_scroll',this.checked)">
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>Wait for Troops Return</h4><p>Pause between attacks for comeback</p></div>
+              <input type="checkbox" class="toggle" onchange="saveToggle('wait_return',this.checked)">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><h3>🎯 Quick Actions</h3></div>
+            <div class="panel-body" style="display:grid;gap:10px">
+              <button class="btn btn-green" style="width:100%;justify-content:center;padding:12px" onclick="triggerAttack()">⚔️ Trigger Attack Now</button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;padding:12px" onclick="toggleBot()">🔄 Start / Stop Bot</button>
+              <button class="btn btn-red" style="width:100%;justify-content:center;padding:12px" onclick="clearLogs()">🗑️ Clear Logs</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>📊 Live Stats</h3></div>
+            <div class="panel-body" style="display:grid;gap:14px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-bottom:6px"><span>Attacks</span><span id="a-attacks" style="color:var(--gold-soft);font-weight:700">—</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="a-attacks-bar" style="width:0%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-bottom:6px"><span>Win Rate</span><span id="a-winrate" style="color:var(--emerald);font-weight:700">—</span></div>
+                <div class="progress-bar"><div class="progress-fill green" id="a-winrate-bar" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>🛠️ Attack Configuration</h3></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="form-field"><label>Max Attacks / Session</label><input type="number" id="cfg-max-attacks" value="30" min="1" max="200"></div>
+            <div class="form-field"><label>Interval Between Attacks (sec)</label><input type="number" id="cfg-interval" value="120" min="30"></div>
+            <div class="form-field"><label>Min RB Level</label><input type="number" id="cfg-min-level" value="1" min="1" max="20"></div>
+            <div class="form-field"><label>Max RB Level</label><input type="number" id="cfg-max-level" value="15" min="1" max="20"></div>
+            <div class="form-field"><label>OpenCV Confidence (0–1)</label><input type="number" id="cfg-confidence" value="0.80" step="0.01" min="0.5" max="1.0"></div>
+            <div class="form-field"><label>ADB Device ID</label><input type="text" id="cfg-device" value="emulator-5554"></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="saveSettings()">💾 Save Settings</button>
+            <button class="btn btn-ghost" onclick="loadSettings()">🔄 Reload from Server</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS PAGE ===== -->
+    <div class="page" id="page-settings">
+      <span class="kicker">Configuration</span>
+      <h1 style="font:800 26px/1 var(--body);margin-bottom:24px">⚙️ Bot Settings</h1>
+      <div class="panel">
+        <div class="panel-head"><h3>🔌 ADB Connection</h3></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="form-field"><label>ADB Path</label><input type="text" id="s-adb-path" value="C:\LDPlayer\LDPlayer9\adb.exe"></div>
+            <div class="form-field"><label>Device ID</label><input type="text" id="s-device-id" value="emulator-5554"></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="saveSettings()">💾 Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>🖼️ Template Images Status</h3></div>
+        <div class="panel-body">
+          <div style="display:grid;gap:8px" id="asset-status">
+            <div style="color:var(--dim);font-style:italic;font-size:13px">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LOGS PAGE ===== -->
+    <div class="page" id="page-logs">
+      <span class="kicker">Activity</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div><h2 style="font:700 18px/1 var(--body)">📜 Live Bot Log</h2><p style="font-size:13px;color:var(--dim);margin-top:4px">Auto-refreshes every 5 seconds</p></div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost" onclick="clearLogs()">🗑️ Clear</button>
+          <button class="btn btn-gold" onclick="fetchLogs()">🔄 Refresh</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Console Output</h3><span id="log-line-count" style="font-size:12px;color:var(--dim)">— lines</span></div>
+        <div class="panel-body" style="padding:12px">
+          <div class="live-log" id="full-log" style="height:400px">
+            <div style="color:var(--faint);font-style:italic">Waiting for logs…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span id="toast-icon">✅</span><span id="toast-msg">Done!</span></div>
+
+<script>
+  // ============================================================
+  // CONFIG — API base URL
+  // When running locally:  http://localhost:5000
+  // When on Railway cloud: it's the same page, so use relative path
+  // ============================================================
+  const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000'
+    : '';  // on cloud, Flask serves both the HTML and API
+
+  let botRunning = false;
+  let statsInterval = null;
+  let logsInterval  = null;
+
+  // ============================================================
+  // PAGE NAVIGATION
+  // ============================================================
+  function showPage(name, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const page = document.getElementById('page-' + name);
+    if (page) page.classList.add('active');
+    if (el) el.classList.add('active');
+    // also highlight matching sidebar item
+    document.querySelectorAll('.sidebar-item').forEach(s => {
+      if (s.textContent.toLowerCase().includes(name)) s.classList.add('active');
+    });
+    if (name === 'logs') fetchLogs();
+  }
+
+  // ============================================================
+  // FETCH REAL STATS FROM FLASK
+  // ============================================================
+  async function fetchStats() {
+    try {
+      const res = await fetch(API + '/api/stats');
+      if (!res.ok) throw new Error('bad response');
+      const d = await res.json();
+      updateDashboard(d);
+      setConnected(true);
+    } catch (e) {
+      setConnected(false);
+    }
+  }
+
+  function updateDashboard(d) {
+    // Uptime
+    const s = d.uptime_seconds || 0;
+    const hh = String(Math.floor(s/3600)).padStart(2,'0');
+    const mm = String(Math.floor((s%3600)/60)).padStart(2,'0');
+    const ss = String(s%60).padStart(2,'0');
+    const uptime = `${hh}:${mm}:${ss}`;
+
+    const attacks = d.attacks_sent || 0;
+    const wins    = d.attacks_won  || 0;
+    const failed  = d.attacks_failed || 0;
+    const wr      = d.win_rate || 0;
+
+    // Stat cards
+    setText('s-attacks', attacks);
+    setText('s-wins', wins);
+    setText('s-uptime', uptime);
+    setText('s-failed', failed);
+    setText('s-winrate', `Win rate: ${wr}%`);
+    setText('s-last-target', d.last_target ? `Last: ${d.last_target}` : 'No attacks yet');
+
+    // Progress bars
+    const maxAtk = 30;
+    setText('p-attacks', `${attacks} / ${maxAtk}`);
+    setBar('p-attacks-bar', Math.min(attacks/maxAtk*100, 100));
+    setText('p-winrate', `${wr}%`);
+    setBar('p-winrate-bar', wr);
+    setText('progress-label', `${attacks} / ${maxAtk} attacks`);
+    setText('p-last-attack', d.last_attack ? new Date(d.last_attack).toLocaleTimeString() : '—');
+
+    // Attack page bars
+    setText('a-attacks', attacks);
+    setBar('a-attacks-bar', Math.min(attacks/maxAtk*100, 100));
+    setText('a-winrate', `${wr}%`);
+    setBar('a-winrate-bar', wr);
+
+    // Sidebar
+    setText('sb-attacks', attacks);
+    setText('sb-uptime', `${hh}:${mm}`);
+    setText('sb-winrate', `${wr}%`);
+
+    // Bot running state
+    if (d.running !== botRunning) {
+      botRunning = d.running;
+      refreshBotUI();
+    }
+
+    // Last update
+    setText('last-update', `Updated: ${new Date().toLocaleTimeString()}`);
+  }
+
+  function setConnected(ok) {
+    const banner = document.getElementById('conn-banner');
+    if (ok) {
+      banner.className = 'conn-banner ok';
+      banner.innerHTML = '✅ Connected to bot server — showing <strong>live data</strong>';
+    } else {
+      banner.className = 'conn-banner err';
+      banner.innerHTML = '❌ Cannot reach bot server. Run <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px">python server.py</code> in your project folder, then refresh.';
+    }
+  }
+
+  // ============================================================
+  // FETCH REAL LOGS
+  // ============================================================
+  async function fetchLogs() {
+    try {
+      const res = await fetch(API + '/api/logs');
+      if (!res.ok) return;
+      const data = await res.json();
+      const lines = data.lines || [];
+      renderLogs(lines, 'full-log');
+      renderLogs(lines.slice(-6), 'dash-log');
+      setText('log-line-count', lines.length + ' lines');
+    } catch (e) {
+      // silently ignore if server not running
+    }
+  }
+
+  function renderLogs(lines, containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (lines.length === 0) {
+      el.innerHTML = '<div style="color:var(--faint);font-style:italic">No logs yet…</div>';
+      return;
+    }
+    el.innerHTML = lines.map(line => {
+      let cls = '';
+      if (line.includes('✅') || line.includes('Attack sent') || line.includes('STARTED')) cls = 'log-success';
+      else if (line.includes('❌') || line.includes('failed') || line.includes('ERROR')) cls = 'log-error';
+      else if (line.includes('⚔️') || line.includes('⚠️') || line.includes('Attacking')) cls = 'log-warn';
+      else if (line.includes('📍') || line.includes('🔍') || line.includes('🤖')) cls = 'log-info';
+      const ts  = line.match(/\[[\d:\- ]+\]/)?.[0] || '';
+      const msg = ts ? line.slice(ts.length).trim() : line;
+      return `<div><span style="color:var(--faint)">${ts}</span> <span class="${cls}">${msg}</span></div>`;
+    }).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  // ============================================================
+  // BOT CONTROLS
+  // ============================================================
+  async function toggleBot() {
+    const endpoint = botRunning ? '/api/stop' : '/api/start';
+    try {
+      const res = await fetch(API + endpoint, { method: 'POST' });
+      const data = await res.json();
+      toast(data.message || 'Done');
+      await fetchStats();
+    } catch (e) {
+      toast('❌ Server not reachable. Start server.py first.', true);
+    }
+  }
+
+  async function triggerAttack() {
+    try {
+      const res = await fetch(API + '/api/attack', { method: 'POST' });
+      const data = await res.json();
+      toast(data.message || '⚔️ Attack queued!');
+    } catch (e) {
+      toast('❌ Server not reachable.', true);
+    }
+  }
+
+  async function clearLogs() {
+    try {
+      await fetch(API + '/api/clear_logs', { method: 'POST' });
+      toast('🗑️ Logs cleared');
+      fetchLogs();
+    } catch (e) {
+      toast('❌ Server not reachable.', true);
+    }
+  }
+
+  async function saveSettings() {
+    const settings = {
+      adb_path:        document.getElementById('s-adb-path')?.value  || document.getElementById('cfg-device')?.value,
+      device_id:       document.getElementById('s-device-id')?.value || document.getElementById('cfg-device')?.value,
+      attack_interval: parseInt(document.getElementById('cfg-interval')?.value || 120),
+      max_attacks:     parseInt(document.getElementById('cfg-max-attacks')?.value || 30),
+      confidence:      parseFloat(document.getElementById('cfg-confidence')?.value || 0.8),
+      min_rb_level:    parseInt(document.getElementById('cfg-min-level')?.value || 1),
+      max_rb_level:    parseInt(document.getElementById('cfg-max-level')?.value || 15),
+    };
+    try {
+      const res = await fetch(API + '/api/settings', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(settings)
+      });
+      const data = await res.json();
+      toast(data.message || '💾 Saved!');
+    } catch (e) {
+      toast('❌ Server not reachable.', true);
+    }
+  }
+
+  async function loadSettings() {
+    try {
+      const res = await fetch(API + '/api/settings');
+      const d = await res.json();
+      if (document.getElementById('cfg-interval'))    document.getElementById('cfg-interval').value    = d.attack_interval || 120;
+      if (document.getElementById('cfg-max-attacks')) document.getElementById('cfg-max-attacks').value = d.max_attacks || 30;
+      if (document.getElementById('cfg-confidence'))  document.getElementById('cfg-confidence').value  = d.confidence || 0.8;
+      if (document.getElementById('cfg-min-level'))   document.getElementById('cfg-min-level').value   = d.min_rb_level || 1;
+      if (document.getElementById('cfg-max-level'))   document.getElementById('cfg-max-level').value   = d.max_rb_level || 15;
+      if (document.getElementById('cfg-device'))      document.getElementById('cfg-device').value      = d.device_id || 'emulator-5554';
+      if (document.getElementById('s-adb-path'))      document.getElementById('s-adb-path').value      = d.adb_path || '';
+      if (document.getElementById('s-device-id'))     document.getElementById('s-device-id').value     = d.device_id || '';
+      toast('✅ Settings loaded from server!');
+    } catch (e) {
+      toast('❌ Server not reachable.', true);
+    }
+  }
+
+  async function saveToggle(key, val) {
+    toast(`${val ? '✅' : '⭕'} ${key.replace('_',' ')}: ${val ? 'ON' : 'OFF'}`);
+  }
+
+  // ============================================================
+  // UI HELPERS
+  // ============================================================
+  function refreshBotUI() {
+    const pill    = document.getElementById('status-pill');
+    const dot     = document.getElementById('pulse-dot');
+    const txt     = document.getElementById('status-text');
+    const btn     = document.getElementById('toggle-btn');
+    const badge   = document.getElementById('sb-attack-badge');
+    const dashIcon  = document.getElementById('dash-stop-icon');
+    const dashLabel = document.getElementById('dash-stop-label');
+
+    if (botRunning) {
+      pill.className  = 'status-pill';
+      dot.className   = 'pulse';
+      txt.textContent = 'Bot Running';
+      btn.textContent = '⏹ Stop Bot';
+      if (badge) { badge.textContent = 'ON'; badge.className = 'sidebar-badge green'; }
+      if (dashIcon)  dashIcon.textContent  = '⏹';
+      if (dashLabel) dashLabel.textContent = 'Stop Bot';
+    } else {
+      pill.className  = 'status-pill stopped';
+      dot.className   = 'pulse red';
+      txt.textContent = 'Bot Stopped';
+      btn.textContent = '▶ Start Bot';
+      if (badge) { badge.textContent = 'OFF'; badge.className = 'sidebar-badge red'; }
+      if (dashIcon)  dashIcon.textContent  = '▶️';
+      if (dashLabel) dashLabel.textContent = 'Start Bot';
+    }
+  }
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  function setBar(id, pct) {
+    const el = document.getElementById(id);
+    if (el) el.style.width = Math.min(Math.max(pct,0),100) + '%';
+  }
+
+  let toastTimer;
+  function toast(msg, isError=false) {
+    const el = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    document.getElementById('toast-icon').textContent = isError ? '❌' : '✅';
+    el.style.borderColor = isError ? 'rgba(240,91,91,.4)' : 'rgba(63,190,123,.4)';
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+  }
+
+  // Update asset status in settings page
+  function updateAssets() {
+    const assets = ['map_button.png','robber_baron_icon.png','attack_button.png','send_troops_button.png','max_troops_button.png'];
+    const container = document.getElementById('asset-status');
+    if (!container) return;
+    container.innerHTML = assets.map(a => {
+      const exists = Math.random() > 0.5; // placeholder — real check happens via bot
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(${exists?'63,190,123':'240,91,91'},.06);border:1px solid rgba(${exists?'63,190,123':'240,91,91'},.2);border-radius:10px">
+        <span style="font:600 13px/1 var(--body)">${a}</span>
+        <span class="badge badge-${exists?'green':'red'}">${exists?'✓ Found':'✗ Missing'}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ============================================================
+  // AUTO-REFRESH EVERY 5 SECONDS
+  // ============================================================
+  function startPolling() {
+    fetchStats();
+    fetchLogs();
+    statsInterval = setInterval(fetchStats, 5000);
+    logsInterval  = setInterval(fetchLogs, 5000);
+  }
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  window.addEventListener('load', () => {
+    startPolling();
+    loadSettings();
+    updateAssets();
+    refreshBotUI();
+  });
+</script>
+</body>
+</html>
