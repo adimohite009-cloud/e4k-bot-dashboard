@@ -123,16 +123,22 @@ def api_start():
     if bot_process and bot_process.poll() is None:
         return jsonify({"ok": False, "message": "Bot is already running!"})
 
+    # Check if an account is configured
+    accounts_file = "accounts.json"
+    if not os.path.exists(accounts_file):
+        return jsonify({"ok": False, "message": "❌ No account configured! Go to Accounts tab first."})
+
     # Update stats to show it's starting
     stats = read_stats()
     stats["running"] = True
+    stats["mode"]    = "api"   # headless API mode — no emulator!
     stats["session_start"] = datetime.now().isoformat()
     write_stats(stats)
 
-    # Start main.py as a subprocess (non-blocking)
+    # Start the API bot (headless — no emulator needed!)
     try:
         bot_process = subprocess.Popen(
-            [sys.executable, "main.py", "--no-input"],
+            [sys.executable, "bot/api_bot.py"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True
@@ -142,7 +148,8 @@ def api_start():
         # Stream bot output to log file in a background thread
         threading.Thread(target=stream_output, args=(bot_process,), daemon=True).start()
 
-        return jsonify({"ok": True, "message": "✅ Bot started!"})
+        log_event("🚀 API Bot started (no emulator mode — running in cloud!)")
+        return jsonify({"ok": True, "message": "🚀 Bot started! No emulator needed — running in cloud!"})
     except Exception as e:
         return jsonify({"ok": False, "message": f"❌ Failed to start bot: {e}"})
 
@@ -210,6 +217,105 @@ def api_clear_logs():
         with open(LOG_FILE, "w") as f:
             f.write("")
     return jsonify({"ok": True, "message": "🗑️ Logs cleared."})
+
+
+# ============================================================
+# ACCOUNT MANAGEMENT ROUTES
+# ============================================================
+ACCOUNTS_FILE = "accounts.json"
+
+def load_accounts():
+    if os.path.exists(ACCOUNTS_FILE):
+        with open(ACCOUNTS_FILE) as f:
+            return json.load(f)
+    return []
+
+def save_accounts(accounts):
+    with open(ACCOUNTS_FILE, "w") as f:
+        json.dump(accounts, f, indent=2)
+
+
+@app.route("/api/accounts", methods=["GET"])
+def api_get_accounts():
+    """Return all saved game accounts (passwords masked)."""
+    accounts = load_accounts()
+    # Mask passwords for security
+    safe = []
+    for acc in accounts:
+        safe.append({
+            "id":         acc.get("id"),
+            "name":       acc.get("name"),
+            "username":   acc.get("username"),
+            "password":   "••••••••",   # never send real password to frontend
+            "server":     acc.get("server"),
+            "status":     acc.get("status", "disconnected"),
+            "last_login": acc.get("last_login"),
+            "active":     acc.get("active", False),
+        })
+    return jsonify({"accounts": safe})
+
+
+@app.route("/api/accounts", methods=["POST"])
+def api_add_account():
+    """Add or update a game account."""
+    data = request.get_json()
+    name     = data.get("name", "My Account")
+    username = data.get("username", "").strip()
+    password = data.get("password", "").strip()
+    server   = data.get("server", "").strip()
+
+    if not username or not password or not server:
+        return jsonify({"ok": False, "message": "❌ Username, password and server are required."})
+
+    accounts = load_accounts()
+
+    # Update if exists, otherwise add
+    for acc in accounts:
+        if acc["username"] == username:
+            acc["password"] = password
+            acc["server"]   = server
+            acc["name"]     = name
+            save_accounts(accounts)
+            log_event(f"🔄 Account updated: {name} ({username})")
+            return jsonify({"ok": True, "message": f"✅ Account '{name}' updated!"})
+
+    new_acc = {
+        "id":         len(accounts) + 1,
+        "name":       name,
+        "username":   username,
+        "password":   password,
+        "server":     server,
+        "status":     "disconnected",
+        "last_login": None,
+        "active":     len(accounts) == 0,  # first account is active by default
+    }
+    accounts.append(new_acc)
+    save_accounts(accounts)
+    log_event(f"➕ Account added: {name} ({username}) on {server}")
+    return jsonify({"ok": True, "message": f"✅ Account '{name}' added!"})
+
+
+@app.route("/api/accounts/<int:account_id>", methods=["DELETE"])
+def api_delete_account(account_id):
+    """Delete a game account."""
+    accounts = load_accounts()
+    accounts = [a for a in accounts if a.get("id") != account_id]
+    save_accounts(accounts)
+    log_event(f"🗑️ Account #{account_id} deleted")
+    return jsonify({"ok": True, "message": "🗑️ Account deleted."})
+
+
+@app.route("/api/accounts/<int:account_id>/activate", methods=["POST"])
+def api_activate_account(account_id):
+    """Set an account as the active bot account."""
+    accounts = load_accounts()
+    for acc in accounts:
+        acc["active"] = (acc.get("id") == account_id)
+    save_accounts(accounts)
+    active = next((a for a in accounts if a.get("active")), None)
+    name = active["name"] if active else "Unknown"
+    log_event(f"⚡ Active account switched to: {name}")
+    return jsonify({"ok": True, "message": f"⚡ Now using: {name}"})
 
 
 # ============================================================

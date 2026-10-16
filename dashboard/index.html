@@ -208,12 +208,14 @@
       <div class="sidebar-label">Overview</div>
       <div class="sidebar-item active" onclick="showPage('dashboard',this)"><span>🏰</span> Dashboard</div>
       <div class="sidebar-item" onclick="showPage('attack',this)"><span>⚔️</span> Attack Bot <span class="sidebar-badge green" id="sb-attack-badge">—</span></div>
+      <div class="sidebar-item" onclick="showPage('accounts',this)"><span>👤</span> Accounts <span class="sidebar-badge" id="sb-acc-count">0</span></div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Bot Modules</div>
       <div class="sidebar-item" onclick="showPage('settings',this)"><span>⚙️</span> Settings</div>
       <div class="sidebar-item" onclick="showPage('logs',this)"><span>📜</span> Live Logs</div>
     </div>
+
     <div class="sidebar-section">
       <div class="sidebar-label">Session Info</div>
       <div id="sidebar-session" style="padding:12px;border-radius:var(--r2);background:rgba(233,169,60,.06);border:1px solid rgba(233,169,60,.15);font-size:12px;color:var(--dim)">
@@ -391,6 +393,75 @@
             <button class="btn btn-gold" onclick="saveSettings()">💾 Save Settings</button>
             <button class="btn btn-ghost" onclick="loadSettings()">🔄 Reload from Server</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ACCOUNTS PAGE ===== -->
+    <div class="page" id="page-accounts">
+      <span class="kicker">Account Manager</span>
+      <h1 style="font:800 26px/1 var(--body);margin-bottom:8px">👤 Game Accounts</h1>
+      <p style="color:var(--dim);margin-bottom:24px;font-size:14px">Add your Empire: Four Kingdoms login — the bot signs in automatically. No emulator needed!</p>
+
+      <!-- Add Account Form -->
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-head"><h3>➕ Add / Update Account</h3></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Display Name</label>
+              <input type="text" id="acc-name" placeholder="e.g. My Main Account">
+            </div>
+            <div class="form-field">
+              <label>Game Username / Email</label>
+              <input type="text" id="acc-username" placeholder="Enter your game username">
+            </div>
+            <div class="form-field">
+              <label>Game Password</label>
+              <input type="password" id="acc-password" placeholder="Enter your game password">
+            </div>
+            <div class="form-field">
+              <label>Server</label>
+              <select id="acc-server" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px;font-size:14px;width:100%">
+                <option value="INT1">INT1 — International 1</option>
+                <option value="INT2">INT2 — International 2</option>
+                <option value="INT3">INT3 — International 3</option>
+                <option value="US1">US1 — United States 1</option>
+                <option value="US2">US2 — United States 2</option>
+                <option value="DE1">DE1 — Germany 1</option>
+                <option value="DE2">DE2 — Germany 2</option>
+                <option value="FR1">FR1 — France 1</option>
+                <option value="BR1">BR1 — Brazil 1</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions" style="margin-top:16px">
+            <button class="btn btn-gold" onclick="saveAccount()">💾 Save Account</button>
+            <span id="acc-save-msg" style="font-size:13px;margin-left:12px;color:var(--emerald)"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Saved Accounts List -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🗂️ Saved Accounts</h3>
+          <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="loadAccounts()">🔄 Refresh</button>
+        </div>
+        <div class="panel-body" id="acc-list">
+          <div style="color:var(--dim);font-style:italic;font-size:13px">Loading accounts…</div>
+        </div>
+      </div>
+
+      <!-- Info Box -->
+      <div style="margin-top:20px;padding:16px;background:rgba(233,169,60,0.06);border:1px solid rgba(233,169,60,0.2);border-radius:var(--r2)">
+        <div style="font:600 13px/1 var(--body);color:var(--gold-soft);margin-bottom:8px">💡 How Account Login Works</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.7">
+          1. Add your game credentials above<br>
+          2. Click <strong style="color:var(--text)">Save Account</strong><br>
+          3. Go to Dashboard → click <strong style="color:var(--text)">Start Bot</strong><br>
+          4. The bot logs into your account automatically via the game's API<br>
+          5. <strong style="color:var(--emerald)">No emulator. No screen. Runs 24/7 in cloud ☁️</strong>
         </div>
       </div>
     </div>
@@ -748,6 +819,98 @@
   }
 
   // ============================================================
+  // ACCOUNT MANAGEMENT
+  // ============================================================
+  async function saveAccount() {
+    const name     = document.getElementById('acc-name').value.trim();
+    const username = document.getElementById('acc-username').value.trim();
+    const password = document.getElementById('acc-password').value.trim();
+    const server   = document.getElementById('acc-server').value;
+    const msgEl    = document.getElementById('acc-save-msg');
+
+    if (!username || !password || !server) {
+      msgEl.style.color = 'var(--red)';
+      msgEl.textContent = '❌ Username, password and server are required!';
+      return;
+    }
+
+    msgEl.style.color = 'var(--dim)';
+    msgEl.textContent = '⏳ Saving…';
+
+    try {
+      const res = await fetch(API + '/api/accounts', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name: name || username, username, password, server })
+      });
+      const data = await res.json();
+      msgEl.style.color = data.ok ? 'var(--emerald)' : 'var(--red)';
+      msgEl.textContent = data.message;
+      if (data.ok) {
+        document.getElementById('acc-password').value = '';
+        loadAccounts();
+        toast(data.message);
+      }
+    } catch(e) {
+      msgEl.style.color = 'var(--red)';
+      msgEl.textContent = '❌ Could not reach server';
+    }
+  }
+
+  async function loadAccounts() {
+    const container = document.getElementById('acc-list');
+    if (!container) return;
+    try {
+      const res = await fetch(API + '/api/accounts');
+      const data = await res.json();
+      const accounts = data.accounts || [];
+
+      // Update sidebar badge
+      const badge = document.getElementById('sb-acc-count');
+      if (badge) badge.textContent = accounts.length;
+
+      if (accounts.length === 0) {
+        container.innerHTML = '<div style="color:var(--dim);font-style:italic;font-size:13px;padding:8px 0">No accounts saved yet. Add one above ↑</div>';
+        return;
+      }
+
+      container.innerHTML = accounts.map(acc => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(${acc.active?'233,169,60':'255,255,255'},.04);border:1px solid rgba(${acc.active?'233,169,60':'255,255,255'},.${acc.active?'25':'08'});border-radius:12px;margin-bottom:10px">
+          <div>
+            <div style="font:700 14px/1 var(--body);color:${acc.active?'var(--gold-soft)':'var(--text)'};margin-bottom:4px">
+              ${acc.active ? '⚡ ' : ''}${acc.name}
+              ${acc.active ? '<span style="font:500 11px/1 var(--body);background:rgba(233,169,60,.15);color:var(--gold-soft);padding:2px 8px;border-radius:20px;margin-left:8px">ACTIVE</span>' : ''}
+            </div>
+            <div style="font-size:12px;color:var(--dim)">👤 ${acc.username} &nbsp;|&nbsp; 🌍 ${acc.server} &nbsp;|&nbsp; ${acc.status === 'connected' ? '🟢 Connected' : '⚪ Disconnected'}</div>
+            ${acc.last_login ? `<div style="font-size:11px;color:var(--faint);margin-top:3px">Last login: ${new Date(acc.last_login).toLocaleString()}</div>` : ''}
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;margin-left:16px">
+            ${!acc.active ? `<button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="activateAccount(${acc.id})">⚡ Use</button>` : ''}
+            <button class="btn btn-red" style="font-size:12px;padding:5px 12px" onclick="deleteAccount(${acc.id})">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      container.innerHTML = '<div style="color:var(--red);font-size:13px">❌ Could not load accounts — is server.py running?</div>';
+    }
+  }
+
+  async function activateAccount(id) {
+    const res = await fetch(API + `/api/accounts/${id}/activate`, { method: 'POST' });
+    const data = await res.json();
+    toast(data.message);
+    loadAccounts();
+  }
+
+  async function deleteAccount(id) {
+    if (!confirm('Delete this account?')) return;
+    const res = await fetch(API + `/api/accounts/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    toast(data.message);
+    loadAccounts();
+  }
+
+  // ============================================================
   // INIT
   // ============================================================
   window.addEventListener('load', () => {
@@ -755,6 +918,7 @@
     loadSettings();
     updateAssets();
     refreshBotUI();
+    loadAccounts();
   });
 </script>
 </body>
