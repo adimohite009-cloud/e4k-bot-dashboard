@@ -1,0 +1,21 @@
+{
+  "discovered_at": "2026-10-17",
+  "player_id": "16-72-21-8730956",
+  "servers": {
+    "accounts":       "accounts.public.ggs-ep.com",
+    "main_game":      "cxf-e4k-flash-integration-live.public.ggs-ep.com",
+    "tracking":       "e4k-client-tracking.goodgamestudios.com",
+    "rewards":        "reward-hub.public.ggs-ep.com",
+    "payments":       "mobile-payments.public.ggs-e4k.com",
+    "media":          "media-s3.goodgamestudios.com"
+  },
+  "endpoints_found": {
+    "auth":           "https://accounts.public.ggs-ep.com/players/{player_id}/gnip-phrase",
+    "rewards":        "https://reward-hub.public.ggs-ep.com/api/rewards/{player_id}/pending",
+    "catalog":        "https://mobile-payments.public.ggs-e4k.com/api/players/{player_id}/catalog/googleplay",
+    "tracking":       "https://e4k-client-tracking.goodgamestudios.com/clienttracker.php",
+    "network_config": "https://media-s3.goodgamestudios.com/games-config/network/status/zone_capacities.json",
+    "versions":       "https://media-s3.goodgamestudios.com/loader/4143095/versions.json"
+  },
+  "notes": "Main game server uses WebSocket/CXF protocol on cxf-e4k-flash-integration-live.public.ggs-ep.com - attack commands sent here. Need to capture more traffic during actual attack."
+}

@@ -138,7 +138,7 @@ def api_start():
     # Start the API bot (headless — no emulator needed!)
     try:
         bot_process = subprocess.Popen(
-            [sys.executable, "bot/api_bot.py"],
+            [sys.executable, "bot/e4k_bot.py"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True
@@ -316,6 +316,163 @@ def api_activate_account(account_id):
     name = active["name"] if active else "Unknown"
     log_event(f"⚡ Active account switched to: {name}")
     return jsonify({"ok": True, "message": f"⚡ Now using: {name}"})
+
+
+# ============================================================
+# ATTACK TEMPLATES
+# ============================================================
+TEMPLATES_FILE = "templates.json"
+
+def load_templates():
+    if os.path.exists(TEMPLATES_FILE):
+        try:
+            with open(TEMPLATES_FILE) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return []
+
+def save_templates(templates):
+    with open(TEMPLATES_FILE, "w") as f:
+        json.dump(templates, f, indent=2)
+
+
+@app.route("/api/templates", methods=["GET"])
+def api_get_templates():
+    """Return all saved attack templates."""
+    return jsonify({"templates": load_templates()})
+
+
+@app.route("/api/templates", methods=["POST"])
+def api_add_template():
+    """Save a new attack template."""
+    data = request.get_json()
+    name = data.get("name", "").strip()
+    if not name:
+        return jsonify({"ok": False, "message": "❌ Template name is required."})
+    templates = load_templates()
+    # Prevent duplicates by name — update if exists
+    for i, t in enumerate(templates):
+        if t.get("name") == name:
+            templates[i] = data
+            save_templates(templates)
+            log_event(f"🎯 Template updated: {name}")
+            return jsonify({"ok": True, "message": f"✅ Template '{name}' updated!"})
+    templates.append(data)
+    save_templates(templates)
+    log_event(f"🎯 Template saved: {name}")
+    return jsonify({"ok": True, "message": f"✅ Template '{name}' saved!"})
+
+
+@app.route("/api/templates/<int:index>", methods=["DELETE"])
+def api_delete_template(index):
+    """Delete a template by index."""
+    templates = load_templates()
+    if index < 0 or index >= len(templates):
+        return jsonify({"ok": False, "message": "❌ Template not found."})
+    name = templates.pop(index).get("name", "?")
+    save_templates(templates)
+    log_event(f"🗑️ Template deleted: {name}")
+    return jsonify({"ok": True, "message": f"🗑️ Template '{name}' deleted."})
+
+
+# ============================================================
+# RECRUIT TROOPS
+# ============================================================
+RECRUIT_FILE = "recruit_config.json"
+
+def load_recruit():
+    if os.path.exists(RECRUIT_FILE):
+        try:
+            with open(RECRUIT_FILE) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {"enabled": False, "threshold": 5, "interval": 300, "troops": {}}
+
+def save_recruit(data):
+    with open(RECRUIT_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+@app.route("/api/recruit/troops", methods=["GET"])
+def api_get_recruit_troops():
+    return jsonify(load_recruit())
+
+
+@app.route("/api/recruit/troops", methods=["POST"])
+def api_save_recruit_troops():
+    data = request.get_json()
+    save_recruit(data)
+    log_event("🪖 Troop recruitment config updated")
+    return jsonify({"ok": True, "message": "💾 Troop recruitment config saved!"})
+
+
+# ============================================================
+# RECRUIT TOOLS
+# ============================================================
+TOOLS_FILE = "tools_config.json"
+
+def load_tools():
+    if os.path.exists(TOOLS_FILE):
+        try:
+            with open(TOOLS_FILE) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {"enabled": False, "threshold": 3, "interval": 600, "tools": {}}
+
+def save_tools(data):
+    with open(TOOLS_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+@app.route("/api/recruit/tools", methods=["GET"])
+def api_get_recruit_tools():
+    return jsonify(load_tools())
+
+
+@app.route("/api/recruit/tools", methods=["POST"])
+def api_save_recruit_tools():
+    data = request.get_json()
+    save_tools(data)
+    log_event("🔨 Tool crafting config updated")
+    return jsonify({"ok": True, "message": "💾 Tool crafting config saved!"})
+
+
+# ============================================================
+# EVENTS
+# ============================================================
+EVENTS_FILE = "events_config.json"
+
+def load_events():
+    if os.path.exists(EVENTS_FILE):
+        try:
+            with open(EVENTS_FILE) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {
+        "samurai": {"enabled": False, "mode": "auto", "level": 10, "daily_limit": 20},
+        "nomads":  {"enabled": False, "min_level": 1, "max_level": 10, "daily_limit": 30, "troop": "cavalry"},
+    }
+
+def save_events(data):
+    with open(EVENTS_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+@app.route("/api/events", methods=["GET"])
+def api_get_events():
+    return jsonify(load_events())
+
+
+@app.route("/api/events", methods=["POST"])
+def api_save_events():
+    data = request.get_json()
+    save_events(data)
+    log_event("🎭 Events config updated")
+    return jsonify({"ok": True, "message": "💾 Events config saved!"})
 
 
 # ============================================================

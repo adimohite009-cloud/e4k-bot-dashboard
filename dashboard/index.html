@@ -12,7 +12,7 @@
       --bg:#0A0E16;--panel:#111726;--panel2:#161D2E;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
       --text:#EAEEF6;--dim:#98A2B6;--faint:#697089;
       --gold:#E9A93C;--gold-soft:#F6D488;--gold-deep:#B5822B;--goldtint:rgba(233,169,60,.14);
-      --emerald:#3FBE7B;--blue:#5B9CF0;--red:#F05B5B;
+      --emerald:#3FBE7B;--blue:#5B9CF0;--red:#F05B5B;--purple:#A78BFA;
       --r:18px;--r2:12px;
       --brand:'Cinzel',Georgia,serif;--body:'Outfit',system-ui,sans-serif;
     }
@@ -29,13 +29,10 @@
 
     /* TOPBAR */
     .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
-    .topbar-in{max-width:1280px;margin:auto;padding:0 24px;display:flex;align-items:center;gap:16px;height:64px}
+    .topbar-in{max-width:1340px;margin:auto;padding:0 24px;display:flex;align-items:center;gap:16px;height:64px}
     .brand{display:flex;align-items:center;gap:10px}
     .brand-name{font:900 20px/1 var(--brand);letter-spacing:.14em;background:linear-gradient(100deg,#b98526,#fff3d6 30%,var(--gold-soft) 52%,var(--gold) 70%,#b98526);-webkit-background-clip:text;background-clip:text;color:transparent}
     .brand-sub{font:600 10px/1 var(--body);letter-spacing:.26em;text-transform:uppercase;color:var(--dim);margin-top:4px;display:block}
-    .nav-links{display:flex;gap:4px;margin-left:28px}
-    .nav-links a{padding:6px 14px;border-radius:10px;font:500 14px/1 var(--body);color:var(--dim);transition:color .15s,background .15s;cursor:pointer}
-    .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,.06)}
     .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
     .status-pill{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;border:1px solid rgba(63,190,123,.35);background:rgba(63,190,123,.08);font:600 13px/1 var(--body);color:#9BEFC1;transition:all .3s}
     .status-pill.stopped{border-color:rgba(240,91,91,.35);background:rgba(240,91,91,.08);color:#F9A8A8}
@@ -51,14 +48,16 @@
     .btn-red:hover{background:rgba(240,91,91,.28)}
     .btn-green{color:#fff;background:rgba(63,190,123,.15);border-color:rgba(63,190,123,.4)}
     .btn-green:hover{background:rgba(63,190,123,.28)}
+    .btn-purple{color:#fff;background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)}
+    .btn-purple:hover{background:rgba(167,139,250,.28)}
 
     /* LAYOUT */
-    .layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px);max-width:1280px;margin:auto;padding:0 24px;gap:28px}
+    .layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px);max-width:1340px;margin:auto;padding:0 24px;gap:28px}
     @media(max-width:900px){.layout{grid-template-columns:1fr;padding:0 16px}.sidebar{display:none}}
 
     /* SIDEBAR */
-    .sidebar{padding:28px 0}
-    .sidebar-section{margin-bottom:28px}
+    .sidebar{padding:28px 0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+    .sidebar-section{margin-bottom:24px}
     .sidebar-label{font:700 10px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;padding:0 12px}
     .sidebar-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:2px;font:500 14px/1 var(--body);color:var(--dim);cursor:pointer;transition:all .15s}
     .sidebar-item:hover{color:var(--text);background:rgba(255,255,255,.05)}
@@ -81,7 +80,6 @@
     .stat-value.green{color:var(--emerald)}
     .stat-value.red{color:var(--red)}
     .stat-sub{margin-top:6px;font-size:12px;color:var(--dim)}
-
     .kicker{font:700 11px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:block}
 
     /* PANEL */
@@ -106,6 +104,7 @@
     .form-field input,.form-field select{width:100%;padding:10px 14px;border-radius:var(--r2);background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);font:500 14px/1 var(--body);transition:border-color .15s,background .15s;outline:none}
     .form-field input:focus,.form-field select:focus{border-color:rgba(233,169,60,.45);background:rgba(255,255,255,.07)}
     .form-field select option{background:#161D2E}
+    .form-field small{display:block;margin-top:6px;font-size:11.5px;color:var(--faint)}
     .form-actions{display:flex;gap:10px;margin-top:20px}
 
     /* LOG TABLE */
@@ -142,16 +141,6 @@
     .progress-fill.green{background:linear-gradient(90deg,var(--emerald),#8BFFC5)}
     .progress-fill.blue{background:linear-gradient(90deg,var(--blue),#A5C8FF)}
 
-    /* TIMER */
-    .timer-ring{position:relative;width:120px;height:120px;margin:0 auto 16px}
-    .timer-ring svg{transform:rotate(-90deg)}
-    .timer-ring circle{fill:none;stroke-width:8}
-    .timer-ring .bg-ring{stroke:rgba(255,255,255,.07)}
-    .timer-ring .fg-ring{stroke:var(--gold);stroke-linecap:round;stroke-dasharray:314;transition:stroke-dashoffset 1s linear}
-    .timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-    .timer-num{font:800 26px/1 var(--body);color:var(--text)}
-    .timer-unit{font:600 11px/1 var(--body);color:var(--dim);margin-top:3px;letter-spacing:.1em;text-transform:uppercase}
-
     /* CONNECTION BANNER */
     .conn-banner{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:var(--r2);margin-bottom:20px;font:600 13px/1.4 var(--body)}
     .conn-banner.ok{background:rgba(63,190,123,.08);border:1px solid rgba(63,190,123,.25);color:#9BEFC1}
@@ -162,8 +151,32 @@
     #toast{position:fixed;bottom:28px;right:28px;z-index:999;display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:var(--r2);background:linear-gradient(180deg,#1C2640,#131B2D);border:1px solid rgba(63,190,123,.4);box-shadow:0 20px 50px -16px rgba(0,0,0,.9);font:600 14px/1 var(--body);color:var(--text);transform:translateY(20px);opacity:0;transition:transform .3s ease,opacity .3s ease}
     #toast.show{transform:translateY(0);opacity:1}
 
-    /* LAST UPDATE */
     #last-update{font-size:11px;color:var(--faint);margin-left:auto}
+
+    /* TROOP / TOOL GRID */
+    .troop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+    .troop-card{padding:14px;border-radius:var(--r2);border:1px solid var(--border);background:rgba(255,255,255,.02);cursor:pointer;transition:all .2s;user-select:none}
+    .troop-card.selected{border-color:rgba(233,169,60,.5);background:rgba(233,169,60,.07)}
+    .troop-card:hover{border-color:rgba(255,255,255,.2)}
+    .troop-card-icon{font-size:30px;text-align:center;margin-bottom:8px}
+    .troop-card-name{font:700 13px/1 var(--body);text-align:center;margin-bottom:8px}
+    .troop-card-qty{display:flex;align-items:center;gap:6px;margin-top:6px}
+    .troop-card-qty input{flex:1;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid var(--border2);color:var(--text);font:600 13px/1 var(--body);text-align:center;outline:none}
+    .troop-card-qty input:focus{border-color:rgba(233,169,60,.4)}
+
+    /* TEMPLATE CARDS */
+    .template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+    .template-card{padding:18px;border-radius:var(--r2);border:1px solid var(--border);background:linear-gradient(180deg,rgba(17,23,38,.9),rgba(22,29,46,.7));transition:all .2s}
+    .template-card:hover{border-color:rgba(233,169,60,.3);transform:translateY(-2px)}
+    .template-card-name{font:700 15px/1 var(--body);color:var(--gold-soft);margin-bottom:8px}
+    .template-card-details{font-size:12.5px;color:var(--dim);line-height:1.8}
+    .template-card-actions{display:flex;gap:8px;margin-top:14px}
+
+    /* EVENT CARDS */
+    .event-card{padding:20px;border-radius:var(--r2);border:1px solid var(--border);background:linear-gradient(180deg,rgba(17,23,38,.9),rgba(22,29,46,.7));margin-bottom:16px}
+    .event-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .event-card-title{font:700 16px/1 var(--body)}
+    .event-card-body{display:grid;gap:12px}
 
     ::-webkit-scrollbar{width:6px}
     ::-webkit-scrollbar-track{background:transparent}
@@ -183,12 +196,6 @@
         <span class="brand-sub">Control Panel</span>
       </div>
     </div>
-    <nav class="nav-links">
-      <a class="active" onclick="showPage('dashboard',this)">Dashboard</a>
-      <a onclick="showPage('attack',this)">Attack</a>
-      <a onclick="showPage('settings',this)">Settings</a>
-      <a onclick="showPage('logs',this)">Logs</a>
-    </nav>
     <div class="topbar-right">
       <span id="last-update">Connecting…</span>
       <div class="status-pill" id="status-pill">
@@ -207,18 +214,30 @@
     <div class="sidebar-section">
       <div class="sidebar-label">Overview</div>
       <div class="sidebar-item active" onclick="showPage('dashboard',this)"><span>🏰</span> Dashboard</div>
-      <div class="sidebar-item" onclick="showPage('attack',this)"><span>⚔️</span> Attack Bot <span class="sidebar-badge green" id="sb-attack-badge">—</span></div>
-      <div class="sidebar-item" onclick="showPage('accounts',this)"><span>👤</span> Accounts <span class="sidebar-badge" id="sb-acc-count">0</span></div>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-label">Bot Modules</div>
-      <div class="sidebar-item" onclick="showPage('settings',this)"><span>⚙️</span> Settings</div>
+      <div class="sidebar-label">Attack</div>
+      <div class="sidebar-item" onclick="showPage('attack',this)"><span>⚔️</span> Attack Bot <span class="sidebar-badge red" id="sb-attack-badge">OFF</span></div>
+      <div class="sidebar-item" onclick="showPage('templates',this)"><span>🎯</span> Attack Templates</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Recruitment</div>
+      <div class="sidebar-item" onclick="showPage('recruit-troops',this)"><span>🪖</span> Recruit Troops</div>
+      <div class="sidebar-item" onclick="showPage('recruit-tools',this)"><span>🔨</span> Recruit Tools</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Automation</div>
+      <div class="sidebar-item" onclick="showPage('events',this)"><span>🎭</span> Events</div>
       <div class="sidebar-item" onclick="showPage('logs',this)"><span>📜</span> Live Logs</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Management</div>
+      <div class="sidebar-item" onclick="showPage('accounts',this)"><span>👤</span> Accounts <span class="sidebar-badge" id="sb-acc-count">0</span></div>
+      <div class="sidebar-item" onclick="showPage('settings',this)"><span>⚙️</span> Settings</div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-label">Session Info</div>
-      <div id="sidebar-session" style="padding:12px;border-radius:var(--r2);background:rgba(233,169,60,.06);border:1px solid rgba(233,169,60,.15);font-size:12px;color:var(--dim)">
+      <div style="padding:12px;border-radius:var(--r2);background:rgba(233,169,60,.06);border:1px solid rgba(233,169,60,.15);font-size:12px;color:var(--dim)">
         <div style="font:600 12px/1 var(--body);color:var(--gold-soft);margin-bottom:8px">⚡ Session</div>
         <div>Attacks: <span id="sb-attacks" style="color:var(--text)">—</span></div>
         <div style="margin-top:4px">Uptime: <span id="sb-uptime" style="color:var(--text)">—</span></div>
@@ -325,30 +344,34 @@
       </div>
     </div>
 
-    <!-- ===== ATTACK PAGE ===== -->
+    <!-- ===== ATTACK BOT PAGE ===== -->
     <div class="page" id="page-attack">
       <span class="kicker">Attack Module</span>
       <h1 style="font:800 26px/1 var(--body);margin-bottom:24px">⚔️ Robber Baron Attack Bot</h1>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" class="attack-grid">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <div class="panel">
           <div class="panel-head"><h3>⚙️ Features</h3></div>
           <div class="panel-body">
             <div class="toggle-row">
-              <div class="toggle-info"><h4>Auto-Attack Robber Barons</h4><p>Find & attack RB castles on world map</p></div>
-              <input type="checkbox" class="toggle" checked onchange="saveToggle('auto_attack',this.checked)">
+              <div class="toggle-info"><h4>Auto-Attack Robber Barons</h4><p>Find &amp; attack RB castles on world map</p></div>
+              <input type="checkbox" class="toggle" id="t-auto-attack" checked onchange="saveAttackToggle('auto_attack',this.checked)">
             </div>
             <div class="toggle-row">
               <div class="toggle-info"><h4>Max Troops Per Attack</h4><p>Always send maximum available troops</p></div>
-              <input type="checkbox" class="toggle" checked onchange="saveToggle('max_troops',this.checked)">
+              <input type="checkbox" class="toggle" id="t-max-troops" checked onchange="saveAttackToggle('max_troops',this.checked)">
             </div>
             <div class="toggle-row">
-              <div class="toggle-info"><h4>Auto Scroll Map</h4><p>Scroll to find more targets when none visible</p></div>
-              <input type="checkbox" class="toggle" checked onchange="saveToggle('auto_scroll',this.checked)">
+              <div class="toggle-info"><h4>Auto Scroll Map</h4><p>Search wider area when no RBs visible</p></div>
+              <input type="checkbox" class="toggle" id="t-auto-scroll" checked onchange="saveAttackToggle('auto_scroll',this.checked)">
             </div>
             <div class="toggle-row">
               <div class="toggle-info"><h4>Wait for Troops Return</h4><p>Pause between attacks for comeback</p></div>
-              <input type="checkbox" class="toggle" onchange="saveToggle('wait_return',this.checked)">
+              <input type="checkbox" class="toggle" id="t-wait-return" onchange="saveAttackToggle('wait_return',this.checked)">
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>Human-like Delays</h4><p>Random 2–8s delays between actions</p></div>
+              <input type="checkbox" class="toggle" id="t-human-delay" checked onchange="saveAttackToggle('human_delay',this.checked)">
             </div>
           </div>
         </div>
@@ -382,18 +405,290 @@
         <div class="panel-head"><h3>🛠️ Attack Configuration</h3></div>
         <div class="panel-body">
           <div class="form-grid">
-            <div class="form-field"><label>Max Attacks / Session</label><input type="number" id="cfg-max-attacks" value="30" min="1" max="200"></div>
-            <div class="form-field"><label>Interval Between Attacks (sec)</label><input type="number" id="cfg-interval" value="120" min="30"></div>
-            <div class="form-field"><label>Min RB Level</label><input type="number" id="cfg-min-level" value="1" min="1" max="20"></div>
-            <div class="form-field"><label>Max RB Level</label><input type="number" id="cfg-max-level" value="15" min="1" max="20"></div>
-            <div class="form-field"><label>OpenCV Confidence (0–1)</label><input type="number" id="cfg-confidence" value="0.80" step="0.01" min="0.5" max="1.0"></div>
-            <div class="form-field"><label>ADB Device ID</label><input type="text" id="cfg-device" value="emulator-5554"></div>
+            <div class="form-field">
+              <label>Max Attacks / Session</label>
+              <input type="number" id="cfg-max-attacks" value="30" min="1" max="200">
+              <small>Stop after this many attacks in one session</small>
+            </div>
+            <div class="form-field">
+              <label>Interval Between Attacks (sec)</label>
+              <input type="number" id="cfg-interval" value="120" min="30">
+              <small>Seconds to wait before attacking again</small>
+            </div>
+            <div class="form-field">
+              <label>Min RB Level</label>
+              <input type="number" id="cfg-min-level" value="1" min="1" max="20">
+              <small>Only attack RBs at or above this level</small>
+            </div>
+            <div class="form-field">
+              <label>Max RB Level</label>
+              <input type="number" id="cfg-max-level" value="15" min="1" max="20">
+              <small>Only attack RBs at or below this level</small>
+            </div>
+            <div class="form-field">
+              <label>Troop Type to Send</label>
+              <select id="cfg-troop-type">
+                <option value="swordsman">🗡️ Swordsman</option>
+                <option value="bowman">🏹 Bowman</option>
+                <option value="cavalry">🐴 Cavalry</option>
+                <option value="crossbowman">🎯 Crossbowman</option>
+                <option value="catapult">💣 Catapult</option>
+                <option value="knight">⚔️ Knight</option>
+                <option value="longbow">🏹 Longbow Archer</option>
+                <option value="ballista">🎯 Ballista</option>
+                <option value="trebuchet">🪃 Trebuchet</option>
+              </select>
+              <small>Primary troop type for RB attacks</small>
+            </div>
+            <div class="form-field">
+              <label>Troop Count Per Attack</label>
+              <input type="number" id="cfg-troop-count" value="500" min="1">
+              <small>Number of troops to send (if not max)</small>
+            </div>
           </div>
           <div class="form-actions">
             <button class="btn btn-gold" onclick="saveSettings()">💾 Save Settings</button>
             <button class="btn btn-ghost" onclick="loadSettings()">🔄 Reload from Server</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ===== ATTACK TEMPLATES PAGE ===== -->
+    <div class="page" id="page-templates">
+      <span class="kicker">Attack Templates</span>
+      <h1 style="font:800 26px/1 var(--body);margin-bottom:8px">🎯 Attack Templates</h1>
+      <p style="color:var(--dim);margin-bottom:24px;font-size:14px">Save reusable attack configurations — like "Kings Bot" setup — and load them instantly.</p>
+
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-head"><h3>➕ Create New Template</h3></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Template Name</label>
+              <input type="text" id="tpl-name" placeholder="e.g. Kings Bot - Level 10">
+            </div>
+            <div class="form-field">
+              <label>Troop Type</label>
+              <select id="tpl-troop-type">
+                <option value="swordsman">🗡️ Swordsman</option>
+                <option value="bowman">🏹 Bowman</option>
+                <option value="cavalry">🐴 Cavalry</option>
+                <option value="crossbowman">🎯 Crossbowman</option>
+                <option value="catapult">💣 Catapult</option>
+                <option value="knight">⚔️ Knight</option>
+                <option value="longbow">🏹 Longbow Archer</option>
+                <option value="ballista">🎯 Ballista</option>
+                <option value="trebuchet">🪃 Trebuchet</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Troop Count</label>
+              <input type="number" id="tpl-troop-count" value="500" min="1">
+            </div>
+            <div class="form-field">
+              <label>Target Type</label>
+              <select id="tpl-target-type">
+                <option value="robber_baron">🏰 Robber Baron</option>
+                <option value="player">👤 Player</option>
+                <option value="npc">🤖 NPC</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Min Level</label>
+              <input type="number" id="tpl-min-level" value="1" min="1" max="20">
+            </div>
+            <div class="form-field">
+              <label>Max Level</label>
+              <input type="number" id="tpl-max-level" value="15" min="1" max="20">
+            </div>
+          </div>
+          <div class="form-field" style="margin-top:16px">
+            <label>Notes</label>
+            <input type="text" id="tpl-notes" placeholder="Optional notes about this template">
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="saveTemplate()">💾 Save Template</button>
+            <button class="btn btn-ghost" onclick="loadTemplates()">🔄 Refresh</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>🗂️ Saved Templates</h3><span id="tpl-count" style="font-size:13px;color:var(--dim)">0 templates</span></div>
+        <div class="panel-body">
+          <div class="template-grid" id="template-list">
+            <div style="color:var(--dim);font-style:italic;font-size:13px">No templates saved yet. Create one above ↑</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RECRUIT TROOPS PAGE ===== -->
+    <div class="page" id="page-recruit-troops">
+      <span class="kicker">Recruitment</span>
+      <h1 style="font:800 26px/1 var(--body);margin-bottom:8px">🪖 Recruit Troops</h1>
+      <p style="color:var(--dim);margin-bottom:24px;font-size:14px">Select which troops to auto-recruit and set the quantity per type. The bot will queue recruitment when troops fall below the threshold.</p>
+
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-head">
+          <h3>⚙️ Recruitment Settings</h3>
+          <input type="checkbox" class="toggle" id="t-auto-recruit-troops" onchange="saveRecruitTroopToggle(this.checked)">
+        </div>
+        <div class="panel-body">
+          <div style="margin-bottom:20px">
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Keep-in-Queue Threshold</label>
+                <input type="number" id="recruit-threshold" value="5" min="1" max="50">
+                <small>Stop queuing when queue has this many batches</small>
+              </div>
+              <div class="form-field">
+                <label>Recruit Interval (sec)</label>
+                <input type="number" id="recruit-interval" value="300" min="60">
+                <small>Check recruitment every N seconds</small>
+              </div>
+            </div>
+          </div>
+          <div style="font:600 12px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:12px">Select Troops to Recruit (click to toggle)</div>
+          <div class="troop-grid" id="troop-selection">
+            <!-- Filled by JS -->
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="saveRecruitTroops()">💾 Save Recruitment Config</button>
+            <button class="btn btn-ghost" onclick="loadRecruitTroops()">🔄 Reload</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:16px;background:rgba(91,156,240,0.06);border:1px solid rgba(91,156,240,0.2);border-radius:var(--r2)">
+        <div style="font:600 13px/1 var(--body);color:#A5C8FF;margin-bottom:8px">💡 How Recruitment Works</div>
+        <div style="font-size:13px;color:var(--dim);line-height:1.7">
+          1. Select which troop types to auto-recruit<br>
+          2. Set the quantity for each type<br>
+          3. Enable Auto-Recruit toggle above<br>
+          4. Bot will queue troops when below threshold<br>
+          5. Runs every <strong style="color:var(--text)">N seconds</strong> alongside other tasks
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RECRUIT TOOLS PAGE ===== -->
+    <div class="page" id="page-recruit-tools">
+      <span class="kicker">Recruitment</span>
+      <h1 style="font:800 26px/1 var(--body);margin-bottom:8px">🔨 Recruit Tools</h1>
+      <p style="color:var(--dim);margin-bottom:24px;font-size:14px">Auto-craft siege tools and equipment for your armies.</p>
+
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-head">
+          <h3>⚙️ Tool Recruitment Settings</h3>
+          <input type="checkbox" class="toggle" id="t-auto-recruit-tools" onchange="saveRecruitToolToggle(this.checked)">
+        </div>
+        <div class="panel-body">
+          <div style="margin-bottom:20px">
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Tool Queue Threshold</label>
+                <input type="number" id="tool-threshold" value="3" min="1" max="20">
+                <small>Stop queuing when already at this count</small>
+              </div>
+              <div class="form-field">
+                <label>Tool Check Interval (sec)</label>
+                <input type="number" id="tool-interval" value="600" min="60">
+                <small>Check tool inventory every N seconds</small>
+              </div>
+            </div>
+          </div>
+          <div style="font:600 12px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:12px">Select Tools to Craft (click to toggle)</div>
+          <div class="troop-grid" id="tool-selection">
+            <!-- Filled by JS -->
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="saveRecruitTools()">💾 Save Tool Config</button>
+            <button class="btn btn-ghost" onclick="loadRecruitTools()">🔄 Reload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EVENTS PAGE ===== -->
+    <div class="page" id="page-events">
+      <span class="kicker">Events</span>
+      <h1 style="font:800 26px/1 var(--body);margin-bottom:8px">🎭 Event Automation</h1>
+      <p style="color:var(--dim);margin-bottom:24px;font-size:14px">Configure auto-participation in limited-time game events.</p>
+
+      <!-- Samurai Event -->
+      <div class="event-card">
+        <div class="event-card-header">
+          <div>
+            <div class="event-card-title">🥷 Samurai Event</div>
+            <div style="font-size:13px;color:var(--dim);margin-top:4px">Auto-complete samurai battles and collect rewards</div>
+          </div>
+          <input type="checkbox" class="toggle" id="t-samurai" onchange="saveEventToggle('samurai',this.checked)">
+        </div>
+        <div class="event-card-body">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Samurai Mode</label>
+              <select id="ev-samurai-mode">
+                <option value="auto">Auto (highest available)</option>
+                <option value="manual">Manual level select</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Samurai Level</label>
+              <input type="number" id="ev-samurai-level" value="10" min="1" max="50">
+              <small>Target level (used in manual mode)</small>
+            </div>
+            <div class="form-field">
+              <label>Daily Attack Limit</label>
+              <input type="number" id="ev-samurai-limit" value="20" min="1">
+              <small>Max samurai attacks per day</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nomads Event -->
+      <div class="event-card">
+        <div class="event-card-header">
+          <div>
+            <div class="event-card-title">🏕️ Nomads Event</div>
+            <div style="font-size:13px;color:var(--dim);margin-top:4px">Auto-attack nomad camps and collect event resources</div>
+          </div>
+          <input type="checkbox" class="toggle" id="t-nomads" onchange="saveEventToggle('nomads',this.checked)">
+        </div>
+        <div class="event-card-body">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Nomad Min Level</label>
+              <input type="number" id="ev-nomad-min-level" value="1" min="1" max="20">
+            </div>
+            <div class="form-field">
+              <label>Nomad Max Level</label>
+              <input type="number" id="ev-nomad-max-level" value="10" min="1" max="20">
+            </div>
+            <div class="form-field">
+              <label>Daily Nomad Limit</label>
+              <input type="number" id="ev-nomad-limit" value="30" min="1">
+              <small>Max nomad attacks per day</small>
+            </div>
+            <div class="form-field">
+              <label>Troop for Nomads</label>
+              <select id="ev-nomad-troop">
+                <option value="cavalry">🐴 Cavalry</option>
+                <option value="swordsman">🗡️ Swordsman</option>
+                <option value="bowman">🏹 Bowman</option>
+                <option value="knight">⚔️ Knight</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-gold" onclick="saveEvents()">💾 Save Event Settings</button>
+        <button class="btn btn-ghost" onclick="loadEvents()">🔄 Reload</button>
       </div>
     </div>
 
@@ -422,9 +717,9 @@
             </div>
             <div class="form-field">
               <label>Server</label>
-              <select id="acc-server" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px;font-size:14px;width:100%">
+              <select id="acc-server">
                 <option value="INT1">INT1 — International 1</option>
-                <option value="INT2">INT2 — International 2</option>
+                <option value="INT2" selected>INT2 — International 2</option>
                 <option value="INT3">INT3 — International 3</option>
                 <option value="US1">US1 — United States 1</option>
                 <option value="US2">US2 — United States 2</option>
@@ -471,22 +766,51 @@
       <span class="kicker">Configuration</span>
       <h1 style="font:800 26px/1 var(--body);margin-bottom:24px">⚙️ Bot Settings</h1>
       <div class="panel">
-        <div class="panel-head"><h3>🔌 ADB Connection</h3></div>
+        <div class="panel-head"><h3>🔌 Game Server Connection</h3></div>
         <div class="panel-body">
           <div class="form-grid">
-            <div class="form-field"><label>ADB Path</label><input type="text" id="s-adb-path" value="C:\LDPlayer\LDPlayer9\adb.exe"></div>
-            <div class="form-field"><label>Device ID</label><input type="text" id="s-device-id" value="emulator-5554"></div>
+            <div class="form-field">
+              <label>Game Server</label>
+              <input type="text" id="s-game-server" value="e4k-live-int2-game.goodgamestudios.com">
+              <small>WebSocket game server host</small>
+            </div>
+            <div class="form-field">
+              <label>Zone</label>
+              <input type="text" id="s-zone" value="EmpirefourkingdomsExGG_21">
+              <small>Your game zone identifier</small>
+            </div>
+            <div class="form-field">
+              <label>Zone ID</label>
+              <input type="number" id="s-zone-id" value="327">
+            </div>
+            <div class="form-field">
+              <label>Player ID</label>
+              <input type="text" id="s-player-id" value="16-72-21-8730956">
+            </div>
           </div>
           <div class="form-actions">
             <button class="btn btn-gold" onclick="saveSettings()">💾 Save</button>
+            <button class="btn btn-ghost" onclick="loadSettings()">🔄 Reload</button>
           </div>
         </div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h3>🖼️ Template Images Status</h3></div>
+        <div class="panel-head"><h3>🤖 Bot Behaviour</h3></div>
         <div class="panel-body">
-          <div style="display:grid;gap:8px" id="asset-status">
-            <div style="color:var(--dim);font-style:italic;font-size:13px">Loading…</div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Human-like Delays</h4><p>Random 2–8s delays to avoid detection</p></div>
+            <input type="checkbox" class="toggle" checked id="s-human-delay">
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Write Stats to stats.json</h4><p>Track session stats locally</p></div>
+            <input type="checkbox" class="toggle" checked id="s-write-stats">
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Write Detailed Logs</h4><p>Verbose logs to logs/attack_log.txt</p></div>
+            <input type="checkbox" class="toggle" checked id="s-write-logs">
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="saveSettings()">💾 Save Settings</button>
           </div>
         </div>
       </div>
@@ -498,6 +822,13 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div><h2 style="font:700 18px/1 var(--body)">📜 Live Bot Log</h2><p style="font-size:13px;color:var(--dim);margin-top:4px">Auto-refreshes every 5 seconds</p></div>
         <div style="display:flex;gap:10px">
+          <select id="log-filter" onchange="filterLogs()" style="padding:7px 12px;border-radius:var(--r2);background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);font:500 13px/1 var(--body)">
+            <option value="all">All</option>
+            <option value="attack">⚔️ Attacks</option>
+            <option value="recruit">🪖 Recruit</option>
+            <option value="event">🎭 Events</option>
+            <option value="error">❌ Errors</option>
+          </select>
           <button class="btn btn-ghost" onclick="clearLogs()">🗑️ Clear</button>
           <button class="btn btn-gold" onclick="fetchLogs()">🔄 Refresh</button>
         </div>
@@ -505,7 +836,7 @@
       <div class="panel">
         <div class="panel-head"><h3>Console Output</h3><span id="log-line-count" style="font-size:12px;color:var(--dim)">— lines</span></div>
         <div class="panel-body" style="padding:12px">
-          <div class="live-log" id="full-log" style="height:400px">
+          <div class="live-log" id="full-log" style="height:500px">
             <div style="color:var(--faint);font-style:italic">Waiting for logs…</div>
           </div>
         </div>
@@ -521,16 +852,13 @@
 <script>
   // ============================================================
   // CONFIG — API base URL
-  // When running locally:  http://localhost:5000
-  // When on Railway cloud: it's the same page, so use relative path
   // ============================================================
   const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000'
-    : '';  // on cloud, Flask serves both the HTML and API
+    : '';
 
   let botRunning = false;
-  let statsInterval = null;
-  let logsInterval  = null;
+  let allLogLines = [];
 
   // ============================================================
   // PAGE NAVIGATION
@@ -538,24 +866,29 @@
   function showPage(name, el) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     const page = document.getElementById('page-' + name);
     if (page) page.classList.add('active');
     if (el) el.classList.add('active');
-    // also highlight matching sidebar item
-    document.querySelectorAll('.sidebar-item').forEach(s => {
-      if (s.textContent.toLowerCase().includes(name)) s.classList.add('active');
-    });
+    else {
+      document.querySelectorAll('.sidebar-item').forEach(s => {
+        if (s.textContent.toLowerCase().includes(name.replace('-',' '))) s.classList.add('active');
+      });
+    }
     if (name === 'logs') fetchLogs();
+    if (name === 'templates') loadTemplates();
+    if (name === 'recruit-troops') loadRecruitTroops();
+    if (name === 'recruit-tools') loadRecruitTools();
+    if (name === 'events') loadEvents();
+    if (name === 'accounts') loadAccounts();
   }
 
   // ============================================================
-  // FETCH REAL STATS FROM FLASK
+  // STATS
   // ============================================================
   async function fetchStats() {
     try {
       const res = await fetch(API + '/api/stats');
-      if (!res.ok) throw new Error('bad response');
+      if (!res.ok) throw new Error('bad');
       const d = await res.json();
       updateDashboard(d);
       setConnected(true);
@@ -565,7 +898,6 @@
   }
 
   function updateDashboard(d) {
-    // Uptime
     const s = d.uptime_seconds || 0;
     const hh = String(Math.floor(s/3600)).padStart(2,'0');
     const mm = String(Math.floor((s%3600)/60)).padStart(2,'0');
@@ -577,7 +909,6 @@
     const failed  = d.attacks_failed || 0;
     const wr      = d.win_rate || 0;
 
-    // Stat cards
     setText('s-attacks', attacks);
     setText('s-wins', wins);
     setText('s-uptime', uptime);
@@ -585,7 +916,6 @@
     setText('s-winrate', `Win rate: ${wr}%`);
     setText('s-last-target', d.last_target ? `Last: ${d.last_target}` : 'No attacks yet');
 
-    // Progress bars
     const maxAtk = 30;
     setText('p-attacks', `${attacks} / ${maxAtk}`);
     setBar('p-attacks-bar', Math.min(attacks/maxAtk*100, 100));
@@ -594,24 +924,19 @@
     setText('progress-label', `${attacks} / ${maxAtk} attacks`);
     setText('p-last-attack', d.last_attack ? new Date(d.last_attack).toLocaleTimeString() : '—');
 
-    // Attack page bars
     setText('a-attacks', attacks);
     setBar('a-attacks-bar', Math.min(attacks/maxAtk*100, 100));
     setText('a-winrate', `${wr}%`);
     setBar('a-winrate-bar', wr);
 
-    // Sidebar
     setText('sb-attacks', attacks);
     setText('sb-uptime', `${hh}:${mm}`);
     setText('sb-winrate', `${wr}%`);
 
-    // Bot running state
     if (d.running !== botRunning) {
       botRunning = d.running;
       refreshBotUI();
     }
-
-    // Last update
     setText('last-update', `Updated: ${new Date().toLocaleTimeString()}`);
   }
 
@@ -622,25 +947,33 @@
       banner.innerHTML = '✅ Connected to bot server — showing <strong>live data</strong>';
     } else {
       banner.className = 'conn-banner err';
-      banner.innerHTML = '❌ Cannot reach bot server. Run <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px">python server.py</code> in your project folder, then refresh.';
+      banner.innerHTML = '❌ Cannot reach bot server. Run <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px">python server.py</code> first.';
     }
   }
 
   // ============================================================
-  // FETCH REAL LOGS
+  // LOGS
   // ============================================================
   async function fetchLogs() {
     try {
       const res = await fetch(API + '/api/logs');
       if (!res.ok) return;
       const data = await res.json();
-      const lines = data.lines || [];
-      renderLogs(lines, 'full-log');
-      renderLogs(lines.slice(-6), 'dash-log');
-      setText('log-line-count', lines.length + ' lines');
-    } catch (e) {
-      // silently ignore if server not running
-    }
+      allLogLines = data.lines || [];
+      filterLogs();
+      renderLogs(allLogLines.slice(-6), 'dash-log');
+      setText('log-line-count', allLogLines.length + ' lines');
+    } catch (e) {}
+  }
+
+  function filterLogs() {
+    const filter = document.getElementById('log-filter')?.value || 'all';
+    let lines = allLogLines;
+    if (filter === 'attack') lines = lines.filter(l => l.includes('⚔️') || l.includes('Attack') || l.includes('attack'));
+    else if (filter === 'recruit') lines = lines.filter(l => l.includes('🪖') || l.includes('Recruit') || l.includes('recruit'));
+    else if (filter === 'event') lines = lines.filter(l => l.includes('🎭') || l.includes('Event') || l.includes('Samurai') || l.includes('Nomad'));
+    else if (filter === 'error') lines = lines.filter(l => l.includes('❌') || l.includes('ERROR') || l.includes('error'));
+    renderLogs(lines, 'full-log');
   }
 
   function renderLogs(lines, containerId) {
@@ -652,10 +985,10 @@
     }
     el.innerHTML = lines.map(line => {
       let cls = '';
-      if (line.includes('✅') || line.includes('Attack sent') || line.includes('STARTED')) cls = 'log-success';
-      else if (line.includes('❌') || line.includes('failed') || line.includes('ERROR')) cls = 'log-error';
+      if (line.includes('✅') || line.includes('STARTED') || line.includes('won')) cls = 'log-success';
+      else if (line.includes('❌') || line.includes('ERROR') || line.includes('failed')) cls = 'log-error';
       else if (line.includes('⚔️') || line.includes('⚠️') || line.includes('Attacking')) cls = 'log-warn';
-      else if (line.includes('📍') || line.includes('🔍') || line.includes('🤖')) cls = 'log-info';
+      else if (line.includes('📍') || line.includes('🔍') || line.includes('🤖') || line.includes('🪖')) cls = 'log-info';
       const ts  = line.match(/\[[\d:\- ]+\]/)?.[0] || '';
       const msg = ts ? line.slice(ts.length).trim() : line;
       return `<div><span style="color:var(--faint)">${ts}</span> <span class="${cls}">${msg}</span></div>`;
@@ -692,21 +1025,31 @@
     try {
       await fetch(API + '/api/clear_logs', { method: 'POST' });
       toast('🗑️ Logs cleared');
+      allLogLines = [];
       fetchLogs();
     } catch (e) {
       toast('❌ Server not reachable.', true);
     }
   }
 
+  // ============================================================
+  // SETTINGS
+  // ============================================================
   async function saveSettings() {
     const settings = {
-      adb_path:        document.getElementById('s-adb-path')?.value  || document.getElementById('cfg-device')?.value,
-      device_id:       document.getElementById('s-device-id')?.value || document.getElementById('cfg-device')?.value,
+      game_server:     document.getElementById('s-game-server')?.value || 'e4k-live-int2-game.goodgamestudios.com',
+      zone:            document.getElementById('s-zone')?.value || 'EmpirefourkingdomsExGG_21',
+      zone_id:         parseInt(document.getElementById('s-zone-id')?.value || 327),
+      player_id:       document.getElementById('s-player-id')?.value || '16-72-21-8730956',
       attack_interval: parseInt(document.getElementById('cfg-interval')?.value || 120),
       max_attacks:     parseInt(document.getElementById('cfg-max-attacks')?.value || 30),
-      confidence:      parseFloat(document.getElementById('cfg-confidence')?.value || 0.8),
       min_rb_level:    parseInt(document.getElementById('cfg-min-level')?.value || 1),
       max_rb_level:    parseInt(document.getElementById('cfg-max-level')?.value || 15),
+      troop_type:      document.getElementById('cfg-troop-type')?.value || 'swordsman',
+      troop_count:     parseInt(document.getElementById('cfg-troop-count')?.value || 500),
+      human_delay:     document.getElementById('s-human-delay')?.checked ?? true,
+      write_stats:     document.getElementById('s-write-stats')?.checked ?? true,
+      write_logs:      document.getElementById('s-write-logs')?.checked ?? true,
     };
     try {
       const res = await fetch(API + '/api/settings', {
@@ -727,20 +1070,299 @@
       const d = await res.json();
       if (document.getElementById('cfg-interval'))    document.getElementById('cfg-interval').value    = d.attack_interval || 120;
       if (document.getElementById('cfg-max-attacks')) document.getElementById('cfg-max-attacks').value = d.max_attacks || 30;
-      if (document.getElementById('cfg-confidence'))  document.getElementById('cfg-confidence').value  = d.confidence || 0.8;
       if (document.getElementById('cfg-min-level'))   document.getElementById('cfg-min-level').value   = d.min_rb_level || 1;
       if (document.getElementById('cfg-max-level'))   document.getElementById('cfg-max-level').value   = d.max_rb_level || 15;
-      if (document.getElementById('cfg-device'))      document.getElementById('cfg-device').value      = d.device_id || 'emulator-5554';
-      if (document.getElementById('s-adb-path'))      document.getElementById('s-adb-path').value      = d.adb_path || '';
-      if (document.getElementById('s-device-id'))     document.getElementById('s-device-id').value     = d.device_id || '';
-      toast('✅ Settings loaded from server!');
-    } catch (e) {
+      if (document.getElementById('cfg-troop-type'))  document.getElementById('cfg-troop-type').value  = d.troop_type || 'swordsman';
+      if (document.getElementById('cfg-troop-count')) document.getElementById('cfg-troop-count').value = d.troop_count || 500;
+      if (document.getElementById('s-game-server'))   document.getElementById('s-game-server').value   = d.game_server || 'e4k-live-int2-game.goodgamestudios.com';
+      if (document.getElementById('s-zone'))          document.getElementById('s-zone').value          = d.zone || 'EmpirefourkingdomsExGG_21';
+      if (document.getElementById('s-zone-id'))       document.getElementById('s-zone-id').value       = d.zone_id || 327;
+      if (document.getElementById('s-player-id'))     document.getElementById('s-player-id').value     = d.player_id || '16-72-21-8730956';
+    } catch (e) {}
+  }
+
+  async function saveAttackToggle(key, val) {
+    toast(`${val ? '✅' : '⭕'} ${key.replace(/_/g,' ')}: ${val ? 'ON' : 'OFF'}`);
+  }
+
+  // ============================================================
+  // ATTACK TEMPLATES
+  // ============================================================
+  async function saveTemplate() {
+    const name = document.getElementById('tpl-name').value.trim();
+    if (!name) { toast('❌ Template name required', true); return; }
+    const tpl = {
+      name,
+      troop_type:   document.getElementById('tpl-troop-type').value,
+      troop_count:  parseInt(document.getElementById('tpl-troop-count').value || 500),
+      target_type:  document.getElementById('tpl-target-type').value,
+      min_level:    parseInt(document.getElementById('tpl-min-level').value || 1),
+      max_level:    parseInt(document.getElementById('tpl-max-level').value || 15),
+      notes:        document.getElementById('tpl-notes').value.trim(),
+    };
+    try {
+      const res = await fetch(API + '/api/templates', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(tpl)
+      });
+      const data = await res.json();
+      toast(data.message || '💾 Template saved!');
+      document.getElementById('tpl-name').value = '';
+      document.getElementById('tpl-notes').value = '';
+      loadTemplates();
+    } catch(e) {
       toast('❌ Server not reachable.', true);
     }
   }
 
-  async function saveToggle(key, val) {
-    toast(`${val ? '✅' : '⭕'} ${key.replace('_',' ')}: ${val ? 'ON' : 'OFF'}`);
+  async function loadTemplates() {
+    try {
+      const res = await fetch(API + '/api/templates');
+      const data = await res.json();
+      const templates = data.templates || [];
+      setText('tpl-count', templates.length + ' templates');
+      const container = document.getElementById('template-list');
+      if (!container) return;
+      if (templates.length === 0) {
+        container.innerHTML = '<div style="color:var(--dim);font-style:italic;font-size:13px">No templates saved yet. Create one above ↑</div>';
+        return;
+      }
+      const icons = {swordsman:'🗡️',bowman:'🏹',cavalry:'🐴',crossbowman:'🎯',catapult:'💣',knight:'⚔️',longbow:'🏹',ballista:'🎯',trebuchet:'🪃'};
+      const targetIcons = {robber_baron:'🏰',player:'👤',npc:'🤖'};
+      container.innerHTML = templates.map((t, i) => `
+        <div class="template-card">
+          <div class="template-card-name">${t.name}</div>
+          <div class="template-card-details">
+            <div>${icons[t.troop_type] || '🗡️'} ${capitalize(t.troop_type)} × ${t.troop_count}</div>
+            <div>${targetIcons[t.target_type] || '🏰'} Target: ${capitalize(t.target_type?.replace('_',' '))}</div>
+            <div>📊 Level: ${t.min_level} – ${t.max_level}</div>
+            ${t.notes ? `<div style="margin-top:6px;font-style:italic;color:var(--faint)">${t.notes}</div>` : ''}
+          </div>
+          <div class="template-card-actions">
+            <button class="btn btn-gold" style="font-size:12px;padding:5px 12px" onclick="loadTemplate(${i})">⚡ Load</button>
+            <button class="btn btn-red" style="font-size:12px;padding:5px 12px" onclick="deleteTemplate(${i})">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {}
+  }
+
+  async function loadTemplate(index) {
+    try {
+      const res = await fetch(API + '/api/templates');
+      const data = await res.json();
+      const t = (data.templates || [])[index];
+      if (!t) return;
+      if (document.getElementById('cfg-troop-type'))  document.getElementById('cfg-troop-type').value  = t.troop_type;
+      if (document.getElementById('cfg-troop-count')) document.getElementById('cfg-troop-count').value = t.troop_count;
+      if (document.getElementById('cfg-min-level'))   document.getElementById('cfg-min-level').value   = t.min_level;
+      if (document.getElementById('cfg-max-level'))   document.getElementById('cfg-max-level').value   = t.max_level;
+      toast(`⚡ Template "${t.name}" loaded into Attack Bot!`);
+      showPage('attack', null);
+    } catch(e) {}
+  }
+
+  async function deleteTemplate(index) {
+    if (!confirm('Delete this template?')) return;
+    try {
+      const res = await fetch(API + '/api/templates/' + index, { method: 'DELETE' });
+      const data = await res.json();
+      toast(data.message || '🗑️ Deleted');
+      loadTemplates();
+    } catch(e) { toast('❌ Server not reachable.', true); }
+  }
+
+  // ============================================================
+  // RECRUIT TROOPS
+  // ============================================================
+  const TROOPS = [
+    {id:'swordsman',  name:'Swordsman',    icon:'🗡️'},
+    {id:'bowman',     name:'Bowman',        icon:'🏹'},
+    {id:'cavalry',    name:'Cavalry',       icon:'🐴'},
+    {id:'crossbowman',name:'Crossbowman',   icon:'🎯'},
+    {id:'catapult',   name:'Catapult',      icon:'💣'},
+    {id:'knight',     name:'Knight',        icon:'⚔️'},
+    {id:'longbow',    name:'Longbow',       icon:'🏹'},
+    {id:'ballista',   name:'Ballista',      icon:'🎯'},
+    {id:'trebuchet',  name:'Trebuchet',     icon:'🪃'},
+  ];
+  const TOOLS = [
+    {id:'ladders',      name:'Ladders',       icon:'🪜'},
+    {id:'shields',      name:'Shields',       icon:'🛡️'},
+    {id:'rams',         name:'Rams',          icon:'🐏'},
+    {id:'mantlets',     name:'Mantlets',      icon:'🔲'},
+    {id:'siege_towers', name:'Siege Towers',  icon:'🗼'},
+  ];
+
+  let selectedTroops = {};
+  let selectedTools = {};
+
+  function renderTroopCards(containerId, items, selected) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = items.map(t => {
+      const qty = selected[t.id]?.qty || 100;
+      const isSelected = !!selected[t.id]?.enabled;
+      return `
+        <div class="troop-card${isSelected ? ' selected' : ''}" id="tc-${t.id}" onclick="toggleTroopCard('${t.id}','${containerId}')">
+          <div class="troop-card-icon">${t.icon}</div>
+          <div class="troop-card-name">${t.name}</div>
+          <div style="font-size:11px;color:${isSelected ? 'var(--gold-soft)' : 'var(--faint)'};text-align:center;margin-bottom:4px">${isSelected ? '✓ Selected' : 'Click to add'}</div>
+          <div class="troop-card-qty">
+            <span style="font-size:11px;color:var(--faint)">Qty:</span>
+            <input type="number" id="qty-${t.id}" value="${qty}" min="1" onclick="event.stopPropagation()" onchange="updateQty('${t.id}','${containerId}')">
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleTroopCard(id, containerId) {
+    const target = containerId === 'troop-selection' ? selectedTroops : selectedTools;
+    if (!target[id]) target[id] = {enabled: false, qty: 100};
+    target[id].enabled = !target[id].enabled;
+    const items = containerId === 'troop-selection' ? TROOPS : TOOLS;
+    renderTroopCards(containerId, items, target);
+  }
+
+  function updateQty(id, containerId) {
+    const target = containerId === 'troop-selection' ? selectedTroops : selectedTools;
+    const val = parseInt(document.getElementById('qty-' + id)?.value || 100);
+    if (!target[id]) target[id] = {enabled: true, qty: val};
+    else target[id].qty = val;
+  }
+
+  async function loadRecruitTroops() {
+    renderTroopCards('troop-selection', TROOPS, selectedTroops);
+    try {
+      const res = await fetch(API + '/api/recruit/troops');
+      const data = await res.json();
+      selectedTroops = data.troops || {};
+      if (document.getElementById('recruit-threshold')) document.getElementById('recruit-threshold').value = data.threshold || 5;
+      if (document.getElementById('recruit-interval'))  document.getElementById('recruit-interval').value  = data.interval || 300;
+      if (document.getElementById('t-auto-recruit-troops')) document.getElementById('t-auto-recruit-troops').checked = !!data.enabled;
+      renderTroopCards('troop-selection', TROOPS, selectedTroops);
+    } catch(e) {
+      renderTroopCards('troop-selection', TROOPS, {});
+    }
+  }
+
+  async function saveRecruitTroops() {
+    // Sync qty values from inputs before saving
+    TROOPS.forEach(t => {
+      const el = document.getElementById('qty-' + t.id);
+      if (el && selectedTroops[t.id]) selectedTroops[t.id].qty = parseInt(el.value || 100);
+    });
+    const payload = {
+      enabled:   document.getElementById('t-auto-recruit-troops')?.checked || false,
+      threshold: parseInt(document.getElementById('recruit-threshold')?.value || 5),
+      interval:  parseInt(document.getElementById('recruit-interval')?.value || 300),
+      troops:    selectedTroops
+    };
+    try {
+      const res = await fetch(API + '/api/recruit/troops', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      toast(data.message || '💾 Saved!');
+    } catch(e) { toast('❌ Server not reachable.', true); }
+  }
+
+  async function saveRecruitTroopToggle(val) {
+    toast(`${val ? '✅' : '⭕'} Auto-recruit troops: ${val ? 'ON' : 'OFF'}`);
+  }
+
+  async function loadRecruitTools() {
+    renderTroopCards('tool-selection', TOOLS, selectedTools);
+    try {
+      const res = await fetch(API + '/api/recruit/tools');
+      const data = await res.json();
+      selectedTools = data.tools || {};
+      if (document.getElementById('tool-threshold')) document.getElementById('tool-threshold').value = data.threshold || 3;
+      if (document.getElementById('tool-interval'))  document.getElementById('tool-interval').value  = data.interval || 600;
+      if (document.getElementById('t-auto-recruit-tools')) document.getElementById('t-auto-recruit-tools').checked = !!data.enabled;
+      renderTroopCards('tool-selection', TOOLS, selectedTools);
+    } catch(e) {
+      renderTroopCards('tool-selection', TOOLS, {});
+    }
+  }
+
+  async function saveRecruitTools() {
+    TOOLS.forEach(t => {
+      const el = document.getElementById('qty-' + t.id);
+      if (el && selectedTools[t.id]) selectedTools[t.id].qty = parseInt(el.value || 10);
+    });
+    const payload = {
+      enabled:   document.getElementById('t-auto-recruit-tools')?.checked || false,
+      threshold: parseInt(document.getElementById('tool-threshold')?.value || 3),
+      interval:  parseInt(document.getElementById('tool-interval')?.value || 600),
+      tools:     selectedTools
+    };
+    try {
+      const res = await fetch(API + '/api/recruit/tools', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      toast(data.message || '💾 Saved!');
+    } catch(e) { toast('❌ Server not reachable.', true); }
+  }
+
+  async function saveRecruitToolToggle(val) {
+    toast(`${val ? '✅' : '⭕'} Auto-recruit tools: ${val ? 'ON' : 'OFF'}`);
+  }
+
+  // ============================================================
+  // EVENTS
+  // ============================================================
+  async function loadEvents() {
+    try {
+      const res = await fetch(API + '/api/events');
+      const d = await res.json();
+      if (document.getElementById('t-samurai'))          document.getElementById('t-samurai').checked          = !!d.samurai?.enabled;
+      if (document.getElementById('ev-samurai-mode'))    document.getElementById('ev-samurai-mode').value      = d.samurai?.mode || 'auto';
+      if (document.getElementById('ev-samurai-level'))   document.getElementById('ev-samurai-level').value     = d.samurai?.level || 10;
+      if (document.getElementById('ev-samurai-limit'))   document.getElementById('ev-samurai-limit').value     = d.samurai?.daily_limit || 20;
+      if (document.getElementById('t-nomads'))           document.getElementById('t-nomads').checked           = !!d.nomads?.enabled;
+      if (document.getElementById('ev-nomad-min-level')) document.getElementById('ev-nomad-min-level').value   = d.nomads?.min_level || 1;
+      if (document.getElementById('ev-nomad-max-level')) document.getElementById('ev-nomad-max-level').value   = d.nomads?.max_level || 10;
+      if (document.getElementById('ev-nomad-limit'))     document.getElementById('ev-nomad-limit').value       = d.nomads?.daily_limit || 30;
+      if (document.getElementById('ev-nomad-troop'))     document.getElementById('ev-nomad-troop').value       = d.nomads?.troop || 'cavalry';
+    } catch(e) {}
+  }
+
+  async function saveEvents() {
+    const payload = {
+      samurai: {
+        enabled:     document.getElementById('t-samurai')?.checked || false,
+        mode:        document.getElementById('ev-samurai-mode')?.value || 'auto',
+        level:       parseInt(document.getElementById('ev-samurai-level')?.value || 10),
+        daily_limit: parseInt(document.getElementById('ev-samurai-limit')?.value || 20),
+      },
+      nomads: {
+        enabled:     document.getElementById('t-nomads')?.checked || false,
+        min_level:   parseInt(document.getElementById('ev-nomad-min-level')?.value || 1),
+        max_level:   parseInt(document.getElementById('ev-nomad-max-level')?.value || 10),
+        daily_limit: parseInt(document.getElementById('ev-nomad-limit')?.value || 30),
+        troop:       document.getElementById('ev-nomad-troop')?.value || 'cavalry',
+      }
+    };
+    try {
+      const res = await fetch(API + '/api/events', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      toast(data.message || '💾 Saved!');
+    } catch(e) { toast('❌ Server not reachable.', true); }
+  }
+
+  async function saveEventToggle(event, val) {
+    toast(`${val ? '✅' : '⭕'} ${capitalize(event)} event: ${val ? 'ON' : 'OFF'}`);
   }
 
   // ============================================================
@@ -782,6 +1404,10 @@
     const el = document.getElementById(id);
     if (el) el.style.width = Math.min(Math.max(pct,0),100) + '%';
   }
+  function capitalize(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 
   let toastTimer;
   function toast(msg, isError=false) {
@@ -792,30 +1418,6 @@
     el.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
-  }
-
-  // Update asset status in settings page
-  function updateAssets() {
-    const assets = ['map_button.png','robber_baron_icon.png','attack_button.png','send_troops_button.png','max_troops_button.png'];
-    const container = document.getElementById('asset-status');
-    if (!container) return;
-    container.innerHTML = assets.map(a => {
-      const exists = Math.random() > 0.5; // placeholder — real check happens via bot
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(${exists?'63,190,123':'240,91,91'},.06);border:1px solid rgba(${exists?'63,190,123':'240,91,91'},.2);border-radius:10px">
-        <span style="font:600 13px/1 var(--body)">${a}</span>
-        <span class="badge badge-${exists?'green':'red'}">${exists?'✓ Found':'✗ Missing'}</span>
-      </div>`;
-    }).join('');
-  }
-
-  // ============================================================
-  // AUTO-REFRESH EVERY 5 SECONDS
-  // ============================================================
-  function startPolling() {
-    fetchStats();
-    fetchLogs();
-    statsInterval = setInterval(fetchStats, 5000);
-    logsInterval  = setInterval(fetchLogs, 5000);
   }
 
   // ============================================================
@@ -864,8 +1466,6 @@
       const res = await fetch(API + '/api/accounts');
       const data = await res.json();
       const accounts = data.accounts || [];
-
-      // Update sidebar badge
       const badge = document.getElementById('sb-acc-count');
       if (badge) badge.textContent = accounts.length;
 
@@ -911,14 +1511,25 @@
   }
 
   // ============================================================
+  // AUTO-REFRESH
+  // ============================================================
+  function startPolling() {
+    fetchStats();
+    fetchLogs();
+    setInterval(fetchStats, 5000);
+    setInterval(fetchLogs, 5000);
+  }
+
+  // ============================================================
   // INIT
   // ============================================================
   window.addEventListener('load', () => {
     startPolling();
     loadSettings();
-    updateAssets();
     refreshBotUI();
     loadAccounts();
+    renderTroopCards('troop-selection', TROOPS, {});
+    renderTroopCards('tool-selection', TOOLS, {});
   });
 </script>
 </body>
