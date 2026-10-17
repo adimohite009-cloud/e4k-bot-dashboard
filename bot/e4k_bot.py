@@ -24,6 +24,18 @@ import time
 import threading
 from datetime import datetime
 
+# Anti-detection: import our 5-layer bypass system
+# (graceful fallback if the file somehow isn't present)
+try:
+    from bot.anti_detection import AntiDetection
+    _AD_AVAILABLE = True
+except ImportError:
+    try:
+        from anti_detection import AntiDetection
+        _AD_AVAILABLE = True
+    except ImportError:
+        _AD_AVAILABLE = False
+
 # ────────────────────────────────────────────────────────────
 # Constants
 # ────────────────────────────────────────────────────────────
@@ -223,6 +235,16 @@ class E4KBot:
         self.session_start = time.time()
         self.settings = load_settings()
         self.account = None
+
+        # ── Anti-Detection System ──────────────────────────
+        # Wraps all timing, rate-limiting, and behavioral
+        # simulation to avoid triggering ban systems.
+        if _AD_AVAILABLE:
+            self.ad = AntiDetection()
+            log("🛡️ Anti-detection system loaded (5-layer protection)")
+        else:
+            self.ad = None
+            log("⚠️ Anti-detection module not found — using basic random delays")
 
     # ──────────────────────────────────────────────────────
     # Login
@@ -628,7 +650,14 @@ class E4KBot:
                 break
 
             # ── Auto-attack RBs ─────────────────────────────
+            # Anti-detection: check rate limits before attacking.
+            # If we've attacked too many times this hour it will
+            # pause here automatically until safe to continue.
+            if self.ad:
+                self.ad.pre_action_check("attack")
             self.attack_robber_barons()
+            if self.ad:
+                self.ad.post_action("attack")
             attacks_this_session += 1
 
             # ── Recruit troops (periodic) ───────────────────
@@ -662,8 +691,17 @@ class E4KBot:
             write_stats(stats)
 
             # ── Wait before next attack ─────────────────────
-            log(f"⏱️ Waiting {attack_interval}s before next attack… ({attacks_this_session}/{max_attacks} done)")
-            deadline = time.time() + attack_interval
+            # Use the anti-detection timer if available —
+            # it applies Gaussian noise, fatigue, and time-of-day
+            # factors to make our timing look human.
+            if self.ad:
+                wait_secs = self.ad.timer.get_attack_interval(attack_interval)
+            else:
+                wait_secs = attack_interval + random.uniform(-20, 20)
+                wait_secs = max(60, wait_secs)
+
+            log(f"⏱️ Waiting {wait_secs:.0f}s before next attack… ({attacks_this_session}/{max_attacks} done)")
+            deadline = time.time() + wait_secs
             while time.time() < deadline:
                 if stop_requested() or trigger_requested():
                     break
